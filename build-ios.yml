@@ -1,0 +1,43 @@
+name: Build iPhone app
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install tools
+        run: npm install
+
+      - name: Create iOS project
+        run: |
+          npx cap add ios
+          npx cap sync ios
+
+      - name: App icon and permissions
+        run: |
+          cp resources/icon.png ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png || echo "icon copy skipped"
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string Take photos of your book covers" ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string Choose photos of your book covers" ios/App/App/Info.plist
+
+      - name: Build unsigned app
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= build
+
+      - name: Package IPA
+        run: |
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -r MyShelf.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MyShelf-ipa
+          path: MyShelf.ipa
