@@ -66,6 +66,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .stat b{display:block;font:700 26px Georgia,serif}.stat small{color:var(--mute)}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:99}
 .toast.on{opacity:1}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:8px 14px;border-radius:20px;border:1px solid var(--line);background:var(--surface);font-size:14px}.chip[aria-pressed=true]{background:var(--accent);color:var(--on);border-color:var(--accent)}
+.card .btn{padding:7px 12px;font-size:13px;margin-top:auto;align-self:flex-start}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -87,7 +89,7 @@ const KEY='myshelf.v1',$=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let books=[];try{books=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){}
 let tab=localStorage.getItem('myshelf.tab')||'reading';
-const TABS=[['reading','Reading','📖'],['want','Want to read','🔖'],['fav','Favorites','♥'],['done','Finished','✓']];
+const TABS=[['reading','Reading','📖'],['want','Want to read','🔖'],['fav','Favorites','♥'],['done','Finished','✓'],['disc','Discover','✦']];
 const NAMES={reading:'Currently reading',want:'Want to read',done:'Finished'};
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(books))}catch(e){toast('Could not save. Storage is full or blocked.')}};
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
@@ -101,6 +103,7 @@ const stars=r=>r?'<span class="star">'+'★'.repeat(r)+'</span>':'';
 function render(){
   $('#tabs').innerHTML=TABS.map(([k,n,i])=>`<button role="tab" aria-selected="${k===tab}" data-t="${k}"><span>${i}</span>${n}</button>`).join('');
   const label=TABS.find(t=>t[0]===tab)[1];
+  if(tab==='disc'){$('#title').textContent=label;$('#count').textContent='';renderDisc();return}
   const list=books.filter(b=>tab==='fav'?b.fav:b.status===tab).sort((a,b)=>b.upd-a.upd);
   $('#title').textContent=label;
   $('#count').textContent=list.length?`${list.length} ${list.length===1?'book':'books'}`:'';
@@ -112,7 +115,8 @@ function render(){
     `<div class="empty"><h2>${{reading:'Nothing on your nightstand',want:'Your list is empty',fav:'No favorites yet',done:'No finished books yet'}[tab]}</h2><p>${{reading:'Add the book you\u2019re reading and track your pages.',want:'Add books you want to read next.',fav:'Tap the heart on any book to keep it here.',done:'Books you finish will collect here.'}[tab]}</p><button class="btn" data-act="add">Add a book</button></div>`;
 }
 $('#tabs').onclick=e=>{const b=e.target.closest('[data-t]');if(b){tab=b.dataset.t;localStorage.setItem('myshelf.tab',tab);render();$('main').scrollTop=0}};
-$('#list').onclick=e=>{const c=e.target.closest('.card');if(c)openDetail(c.dataset.id);if(e.target.dataset.act==='add')openAdd()};
+$('#list').oninput=e=>{if(e.target.id==='av')D.avoid=e.target.value;if(e.target.id==='nr')D.narr=e.target.value};
+$('#list').onclick=e=>{if(tab==='disc'){discClick(e);return}const c=e.target.closest('.card');if(c)openDetail(c.dataset.id);if(e.target.dataset.act==='add')openAdd()};
 $('#addBtn').onclick=()=>openAdd();
 $('#menuBtn').onclick=openMenu;
 document.querySelectorAll('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close()}));
@@ -197,6 +201,65 @@ function openMenu(){
   $('#file').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());if(!Array.isArray(j))throw 0;
     const have=new Set(books.map(b=>b.id));j.forEach(b=>{if(b&&b.title&&!have.has(b.id))books.push({...b,id:b.id||uid(),upd:b.upd||Date.now()})});
     save();render();d.close();toast('Backup restored')}catch(err){toast('That file is not a My Shelf backup')}};
+}
+
+/* ---- Discover (Lumina) ---- */
+const D={mood:'',pace:'Medium',avoid:'',fmt:'ANY',len:'ANY',era:'ANY',narr:'',json:false,res:null,busy:false};
+const SEG=(l,k,o)=>`<label>${l}</label><div class="seg" style="margin:0">${o.map(([v,t])=>`<button data-k="${k}" data-v="${v}" aria-pressed="${D[k]===v}">${t}</button>`).join('')}</div>`;
+const MOODS={'Cozy':['cozy mystery','cozy fantasy','heartwarming'],'Melancholic':['grief','loss','melancholy'],'Mind-bending':['unreliable narrator','metafiction','philosophical fiction'],'Uplifting':['feel-good','friendship','hope'],'Dark & gothic':['gothic fiction','dark fantasy','horror'],'Nostalgic':['coming of age','childhood','family saga'],'Atmospheric':['atmospheric','literary fiction','magic realism'],'High-tension':['thriller','suspense','psychological thriller']};
+const LUMINA=`You are Lumina, an advanced literary architect and recommendation engine: warm, articulate, like an expert independent bookseller.
+RULES: (1) 60/40 ratio: at most ONE major bestseller; at least 60% of picks must be acclaimed backlist, indie or under-the-radar titles. (2) Hard exclusion: drop any title containing my listed constraints. (3) Zero spoilers. (4) If I choose AUDIOBOOK, prioritize award-winning narration (Audie winners, iconic performances) that fits my narrator preference. (5) Respect my length (SHORT <300 pages, MEDIUM 300-500, EPIC 500+) and release era (CLASSIC, BACKLIST, RECENT = last 3 years). (6) If inputs are vague, infer defaults and say so. If pacing and mood conflict, prioritize pacing.
+OUTPUT in markdown:
+### Reader Profile Synthesis: a 2-sentence blockquote.
+### Core Recommendations: 3-4 books, each with Metadata (year | genre | pages or audio duration), Format Recommendation (with narration notes if audio), Pacing Precision (FAST/MEDIUM/SLOW + 1 sentence), Mood Profile (3 tags), Narrative Archetype, The Hook (2-3 sentences), Affinity Match (tie to my history), Trope & Vibe Tags (with content notes).
+### Feature Modules: A. The Wildcard Matrix (1 title outside my usual genres: The Stretch, The Anchor). B. Book Club Discussion Starter (2 spoiler-free prompts for the top pick).
+JSON MODE: if my request ends with --json, output ONLY JSON: {"profile_summary","recommendations":[{"title","author","year","genre","best_format","pacing","mood_tags":[],"pitch","affinity_reason","tropes":[]}],"wildcard":{"title","author","stretch_reason","anchor_reason"}}.`;
+function luminaPrompt(){
+  const f=b=>`${b.title}${b.author?' by '+b.author:''}`,L=books.filter(b=>b.rating>=4||b.fav).map(f),H=books.filter(b=>b.rating&&b.rating<=2).map(f);
+  return `${LUMINA}\n\n---\nMY REQUEST\n- Core mood: ${D.mood||'(not set, infer one)'}\n- Pacing: ${D.pace.toUpperCase()}\n- Loved titles: ${L.join('; ')||'(none yet)'}\n- Disliked titles: ${H.join('; ')||'(none yet)'}\n- Constraints and exclusions: ${D.avoid||'(none)'}\n- Format: ${D.fmt}${D.fmt==='AUDIOBOOK'&&D.narr?` (narrator style: ${D.narr})`:''}\n- Length: ${D.len}\n- Release era: ${D.era}${D.json?'\n\n--json':''}`}
+function renderDisc(){
+  const r=D.res;
+  $('#list').innerHTML=`<p class="a" style="margin:0">Pick a mood and a pace. Your ratings and dealbreakers shape the picks.</p>
+  <label>Mood</label><div class="chips">${Object.keys(MOODS).map(m=>`<button class="chip" data-m="${esc(m)}" aria-pressed="${D.mood===m}">${esc(m)}</button>`).join('')}</div>
+  <label>Pacing</label><div class="seg" style="margin:0">${['Fast','Medium','Slow'].map(p=>`<button data-p="${p}" aria-pressed="${D.pace===p}">${p}</button>`).join('')}</div>
+  ${SEG('Format','fmt',[['ANY','Any'],['PRINT','Print'],['EBOOK','Ebook'],['AUDIOBOOK','Audio']])}${D.fmt==='AUDIOBOOK'?`<input type="text" id="nr" value="${esc(D.narr)}" placeholder="Narrator: full cast, single voice, dramatic" style="margin-top:8px" aria-label="Narrator style">`:''}${SEG('Length (short under 300 pages, epic 500+)','len',[['ANY','Any'],['SHORT','Short'],['MEDIUM','Medium'],['EPIC','Epic']])}${SEG('Release era (recent = last 3 years)','era',[['ANY','Any'],['CLASSIC','Classic'],['BACKLIST','Backlist'],['RECENT','Recent']])}
+  <label for="av">Dealbreakers (separate with commas)</label><input type="text" id="av" value="${esc(D.avoid)}" placeholder="love triangle, gore">
+  <div class="two" style="margin-top:14px"><button class="btn" data-a="find" style="flex:1">Find books</button><button class="btn s" data-a="ask" style="flex:1">Ask Lumina</button></div>
+  <div class="res">${D.busy?'<p class="a">Looking…</p>':r?(r.length?r.map((x,i)=>`<div class="card"><img class="cv" src="https://covers.openlibrary.org/b/id/${x.cover_i}-S.jpg" alt=""><div class="meta"><div class="t">${esc(x.title)}</div><div class="a">${esc((x.author_name||[])[0]||'')}</div><div class="sub">${x.first_publish_year||''}${x.number_of_pages_median?` · ${x.number_of_pages_median} pages`:''}${x.ratings_average?` · ★ ${x.ratings_average.toFixed(1)}`:''}</div><button class="btn" data-r="${i}">Add to Want to read</button></div></div>`).join(''):'<p class="a">Nothing matched. Try another mood or fewer dealbreakers.</p>'):''}</div>`}
+async function discClick(e){
+  const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.m){D.mood=t.dataset.m;renderDisc()}
+  else if(t.dataset.k){D[t.dataset.k]=t.dataset.v;renderDisc()}
+  else if(t.dataset.p){D.pace=t.dataset.p;renderDisc()}
+  else if(t.dataset.r){const x=D.res[t.dataset.r];addBook({title:x.title,author:(x.author_name||[])[0]||'',pages:x.number_of_pages_median||0,cover:`https://covers.openlibrary.org/b/id/${x.cover_i}-M.jpg`,ol:x.key});D.res=D.res.filter(y=>y!==x);renderDisc()}
+  else if(t.dataset.a==='find')find();
+  else if(t.dataset.a==='ask')askLumina();
+}
+async function find(){
+  if(!D.mood){toast('Pick a mood first');return}
+  D.busy=true;D.res=null;renderDisc();
+  const bad=D.avoid.toLowerCase().split(',').map(s=>s.trim()).filter(Boolean),have=new Set(books.map(b=>b.ol)),titles=new Set(books.map(b=>b.title.toLowerCase()));
+  try{
+    const rs=await Promise.all(MOODS[D.mood].map(s=>fetch(`https://openlibrary.org/search.json?limit=40&sort=rating&fields=key,title,author_name,cover_i,number_of_pages_median,first_publish_year,ratings_average,ratings_count,subject&subject=${encodeURIComponent(s)}`).then(r=>r.json()).then(j=>j.docs||[])));
+    const Y=new Date().getFullYear(),[lo,hi]=D.len!=='ANY'?{SHORT:[0,299],MEDIUM:[300,500],EPIC:[500,5000]}[D.len]:{Fast:[0,380],Medium:[200,550],Slow:[350,5000]}[D.pace],seen=new Set(),ok=x=>{const n=x.number_of_pages_median,y=x.first_publish_year;if(n&&(n<lo||n>hi))return false;if(D.era==='ANY')return true;if(!y)return false;return D.era==='CLASSIC'?y<1970:D.era==='BACKLIST'?y>=1970&&y<Y-3:y>=Y-3},minR=D.era==='RECENT'?3:10;
+    let pool=rs.flat().filter(x=>!seen.has(x.key)&&seen.add(x.key)&&x.cover_i&&x.ratings_count>=minR&&!have.has(x.key)&&!titles.has(x.title.toLowerCase())&&ok(x)&&!bad.some(w=>(x.title+' '+(x.subject||[]).join(' ')).toLowerCase().includes(w)));
+    pool.sort((a,b)=>(b.ratings_average||0)-(a.ratings_average||0));
+    let pop=0;D.res=[];
+    for(const x of pool){const big=x.ratings_count>2000;if(big&&pop>=1)continue;if(big)pop++;D.res.push(x);if(D.res.length>=5)break}
+  }catch(err){D.res=null;toast('Discover needs an internet connection')}
+  D.busy=false;renderDisc();
+}
+function askLumina(){
+  const p=luminaPrompt(),d=$('#menu');
+  try{navigator.clipboard.writeText(p)}catch(e){}
+  d.innerHTML=`<h2 style="font:700 22px Georgia,serif;margin:0 0 6px">Ask Lumina</h2><p class="a" style="margin:0 0 8px">This request includes your rated and favorite books. Copy it, then paste it into a Claude chat.</p>
+  <textarea id="lp" readonly style="min-height:200px;font-size:13px">${esc(p)}</textarea>
+  <label style="display:flex;gap:8px;align-items:center;margin-top:10px"><input type="checkbox" id="js"> Machine-readable answer (JSON)</label>
+  <button class="btn" id="cp" style="width:100%;margin-top:10px">Copy request</button>
+  <a class="btn s" href="https://claude.ai/new" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:8px;text-decoration:none">Open Claude</a>`;
+  d.showModal();
+  $('#cp').onclick=()=>{const t=$('#lp');t.select();t.setSelectionRange(0,99999);try{navigator.clipboard.writeText($('#lp').value)}catch(e){document.execCommand('copy')}toast('Copied')};
+  $('#js').onchange=e=>{D.json=e.target.checked;$('#lp').value=luminaPrompt()};
 }
 
 render();
