@@ -73,6 +73,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .tiles div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}.tiles b{display:block;font:700 20px Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tiles small{font-size:12px;color:var(--mute)}
 .rc{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
 #dash:empty{display:none}
+.tools{display:flex;gap:8px;margin-bottom:10px}.tools[hidden]{display:none}
+select{padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -84,7 +86,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <button class="ib p" id="addBtn" aria-label="Add a book">+</button>
 </header>
 <div class="count" id="count"></div>
-<main><div class="list" id="dash"></div><div class="list" id="list"></div></main>
+<main><div class="list" id="dash"></div><div class="list tools" id="tools"><input type="search" id="fq" placeholder="Search your shelf" aria-label="Search your shelf" style="flex:1"><select id="fs" aria-label="Sort"><option value="upd">Recent</option><option value="title">Title</option><option value="rating">Rating</option></select></div><div class="list" id="list"></div></main>
 <nav id="tabs" role="tablist"></nav>
 <dialog id="add"></dialog>
 <dialog id="detail"></dialog>
@@ -99,6 +101,9 @@ let books=[];try{books=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){}
 let tab=localStorage.getItem('myshelf.tab')||'reading';
 const TABS=[['reading','Reading','📖'],['want','Want to read','🔖'],['fav','Favorites','♥'],['done','Finished','✓'],['disc','Discover','✦']];
 const NAMES={reading:'Currently reading',want:'Want to read',done:'Finished'};
+let SET={};try{SET=JSON.parse(localStorage.getItem('myshelf.set')||'{}')}catch(e){}
+const saveSet=()=>{try{localStorage.setItem('myshelf.set',JSON.stringify(SET))}catch(e){}};
+let fq='',fs='upd';
 const today=()=>new Date().toLocaleDateString('en-CA');
 let localUpd=+localStorage.getItem('myshelf.upd')||0,pt;
 const store=()=>{try{localStorage.setItem(KEY,JSON.stringify(books));localStorage.setItem('myshelf.upd',localUpd)}catch(e){toast('Could not save. Storage is full or blocked.')}};
@@ -125,7 +130,7 @@ function render(){
   const label=TABS.find(t=>t[0]===tab)[1];
   renderDash();
   if(tab==='disc'){$('#title').textContent=label;$('#count').textContent='';renderDisc();return}
-  const list=books.filter(b=>tab==='fav'?b.fav:b.status===tab).sort((a,b)=>b.upd-a.upd);
+  const list=books.filter(b=>(tab==='fav'?b.fav:b.status===tab)&&(!fq||(b.title+' '+b.author).toLowerCase().includes(fq))).sort((a,b)=>fs==='title'?a.title.localeCompare(b.title):fs==='rating'?(b.rating||0)-(a.rating||0):b.upd-a.upd);
   $('#title').textContent=label;
   $('#count').textContent=list.length?`${list.length} ${list.length===1?'book':'books'}`:'';
   $('#list').innerHTML=list.length?list.map(b=>{
@@ -179,7 +184,7 @@ function addBook(o){
 }
 
 /* ---- Detail ---- */
-function patch(id,p){const b=get(id);if((p.page!==undefined&&p.page>(b.page||0))||p.status==='done')p.days=[...new Set([...(b.days||[]),today()])];Object.assign(b,p,{upd:Date.now()});save();render()}
+function patch(id,p){const b=get(id);if((p.page!==undefined&&p.page>(b.page||0))||p.status==='done')p.days=[...new Set([...(b.days||[]),today()])];if(p.status==='done')p.end=Date.now();Object.assign(b,p,{upd:Date.now()});save();render()}
 function fill(id){
   const b=get(id),d=$('#detail');
   d.innerHTML=`<div class="row">${cover(b,'lg')}<div class="meta" style="gap:4px"><div class="t" style="font-size:20px;-webkit-line-clamp:4">${esc(b.title)}</div><div class="a">${esc(b.author)}</div></div>
@@ -218,11 +223,18 @@ function openMenu(){
   const rated=books.filter(b=>b.rating);const avg=rated.length?(rated.reduce((s,b)=>s+b.rating,0)/rated.length).toFixed(1):'–';
   d.innerHTML=`<h2 style="font:700 22px Georgia,serif;margin:0">Your reading</h2>
   <div class="stat"><div><b>${books.length}</b><small>books on shelf</small></div><div><b>${done.length}</b><small>finished</small></div><div><b>${pages.toLocaleString()}</b><small>pages read</small></div><div><b>${avg}</b><small>average rating</small></div></div>
+  <label for="goal">Reading goal this year (books)</label><input type="number" id="goal" min="0" inputmode="numeric" value="${SET.goal||''}">
+  <label for="ak">Claude API key (optional: Lumina answers inside the app)</label><input type="password" id="ak" autocomplete="off" placeholder="sk-ant-..." value="${esc(SET.key||'')}">
+  <label for="am">Claude model</label><input type="text" id="am" value="${esc(SET.model||'claude-sonnet-5-5')}">
+  <p class="a" style="margin:6px 0 14px;font-size:13px">Your key is stored only on this device and sent only to Anthropic. Use a key with a low spend limit, and never on a shared phone.</p>
   <p class="a" style="margin:0 0 10px">Everything saves on this phone automatically. Make a backup before you clear Safari data or switch phones.</p>
   <button class="btn" id="exp" style="width:100%">Download backup</button>
   <button class="btn s" id="imp" style="width:100%;margin-top:8px">Restore from backup</button>
   <input type="file" id="file" accept="application/json,.json" hidden>`;
   d.showModal();
+  $('#goal').oninput=e=>{SET.goal=+e.target.value||0;saveSet();render()};
+  $('#ak').oninput=e=>{SET.key=e.target.value.trim();saveSet()};
+  $('#am').oninput=e=>{SET.model=e.target.value.trim();saveSet()};
   $('#exp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(books,null,1)],{type:'application/json'}));a.download='my-shelf-backup.json';a.click()};
   $('#imp').onclick=()=>$('#file').click();
   $('#file').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());if(!Array.isArray(j))throw 0;
@@ -231,7 +243,7 @@ function openMenu(){
 }
 
 /* ---- Discover (Lumina) ---- */
-const D={mood:'',pace:'Medium',avoid:'',fmt:'ANY',len:'ANY',era:'ANY',narr:'',json:false,res:null,busy:false};
+const D={ai:null,aiBusy:false,aiErr:'',mood:'',pace:'Medium',avoid:'',fmt:'ANY',len:'ANY',era:'ANY',narr:'',json:false,res:null,busy:false};
 const SEG=(l,k,o)=>`<label>${l}</label><div class="seg" style="margin:0">${o.map(([v,t])=>`<button data-k="${k}" data-v="${v}" aria-pressed="${D[k]===v}">${t}</button>`).join('')}</div>`;
 const MOODS={'Cozy':['cozy mystery','cozy fantasy','heartwarming'],'Melancholic':['grief','loss','melancholy'],'Mind-bending':['unreliable narrator','metafiction','philosophical fiction'],'Uplifting':['feel-good','friendship','hope'],'Dark & gothic':['gothic fiction','dark fantasy','horror'],'Nostalgic':['coming of age','childhood','family saga'],'Atmospheric':['atmospheric','literary fiction','magic realism'],'High-tension':['thriller','suspense','psychological thriller']};
 const LUMINA=`You are Lumina, an advanced literary architect and recommendation engine: warm, articulate, like an expert independent bookseller.
@@ -252,10 +264,11 @@ function renderDisc(){
   ${SEG('Format','fmt',[['ANY','Any'],['PRINT','Print'],['EBOOK','Ebook'],['AUDIOBOOK','Audio']])}${D.fmt==='AUDIOBOOK'?`<input type="text" id="nr" value="${esc(D.narr)}" placeholder="Narrator: full cast, single voice, dramatic" style="margin-top:8px" aria-label="Narrator style">`:''}${SEG('Length (short under 300 pages, epic 500+)','len',[['ANY','Any'],['SHORT','Short'],['MEDIUM','Medium'],['EPIC','Epic']])}${SEG('Release era (recent = last 3 years)','era',[['ANY','Any'],['CLASSIC','Classic'],['BACKLIST','Backlist'],['RECENT','Recent']])}
   <label for="av">Dealbreakers (separate with commas)</label><input type="text" id="av" value="${esc(D.avoid)}" placeholder="love triangle, gore">
   <div class="two" style="margin-top:14px"><button class="btn" data-a="find" style="flex:1">Find books</button><button class="btn s" data-a="ask" style="flex:1">Ask Lumina</button></div>
-  <div class="res">${D.busy?'<p class="a">Looking…</p>':r?(r.length?r.map((x,i)=>`<div class="card"><img class="cv" src="https://covers.openlibrary.org/b/id/${x.cover_i}-S.jpg" alt=""><div class="meta"><div class="t">${esc(x.title)}</div><div class="a">${esc((x.author_name||[])[0]||'')}</div><div class="sub">${x.first_publish_year||''}${x.number_of_pages_median?` · ${x.number_of_pages_median} pages`:''}${x.ratings_average?` · ★ ${x.ratings_average.toFixed(1)}`:''}</div><button class="btn" data-r="${i}">Add to Want to read</button></div></div>`).join(''):'<p class="a">Nothing matched. Try another mood or fewer dealbreakers.</p>'):''}</div>`}
+  ${aiHTML()}<div class="res">${D.busy?'<p class="a">Looking…</p>':r?(r.length?r.map((x,i)=>`<div class="card"><img class="cv" src="https://covers.openlibrary.org/b/id/${x.cover_i}-S.jpg" alt=""><div class="meta"><div class="t">${esc(x.title)}</div><div class="a">${esc((x.author_name||[])[0]||'')}</div><div class="sub">${x.first_publish_year||''}${x.number_of_pages_median?` · ${x.number_of_pages_median} pages`:''}${x.ratings_average?` · ★ ${x.ratings_average.toFixed(1)}`:''}</div><button class="btn" data-r="${i}">Add to Want to read</button></div></div>`).join(''):'<p class="a">Nothing matched. Try another mood or fewer dealbreakers.</p>'):''}</div>`}
 async function discClick(e){
   const t=e.target.closest('button');if(!t)return;
   if(t.dataset.m){D.mood=t.dataset.m;renderDisc()}
+  else if(t.dataset.ar!==undefined)addAI(t.dataset.ar);
   else if(t.dataset.k){D[t.dataset.k]=t.dataset.v;renderDisc()}
   else if(t.dataset.p){D.pace=t.dataset.p;renderDisc()}
   else if(t.dataset.r){const x=D.res[t.dataset.r];addBook({title:x.title,author:(x.author_name||[])[0]||'',pages:x.number_of_pages_median||0,cover:`https://covers.openlibrary.org/b/id/${x.cover_i}-M.jpg`,ol:x.key});D.res=D.res.filter(y=>y!==x);renderDisc()}
@@ -277,6 +290,7 @@ async function find(){
   D.busy=false;renderDisc();
 }
 function askLumina(){
+  if(SET.key)return luminaAI();
   const p=luminaPrompt(),d=$('#menu');
   try{navigator.clipboard.writeText(p)}catch(e){}
   d.innerHTML=`<h2 style="font:700 22px Georgia,serif;margin:0 0 6px">Ask Lumina</h2><p class="a" style="margin:0 0 8px">This request includes your rated and favorite books. Copy it, then paste it into a Claude chat.</p>
@@ -293,14 +307,18 @@ function askLumina(){
 function renderDash(){
   const el=$('#dash'),c=window.cloud,u=c&&c.user;
   $('#acctBtn').textContent=u?(u.email||'?')[0].toUpperCase():'👤';
+  $('#tools').hidden=tab==='disc';
   if(tab==='disc'){el.innerHTML='';return}
   const done=books.filter(b=>b.status==='done'),rd=books.filter(b=>b.status==='reading');
   const pages=done.reduce((s,b)=>s+(b.pages||0),0)+rd.reduce((s,b)=>s+(b.page||0),0);
   const cur=[...rd].sort((a,b)=>b.upd-a.upd)[0],pct=cur&&cur.pages?Math.min(100,Math.round((cur.page||0)/cur.pages*100)):0,R=34,C=2*Math.PI*R;
+  const Y=new Date().getFullYear(),gd=done.filter(b=>new Date(b.end||b.upd).getFullYear()===Y).length,goalHTML=SET.goal?`<div class="ban"><b>${gd} of ${SET.goal}</b> books toward your ${Y} goal<div class="bar" style="margin-top:6px"><i style="width:${Math.min(100,gd/SET.goal*100)}%"></i></div></div>`:'';
   const ban=c&&c.on?(u?`☁ Cloud Sync Active — Logged in as ${esc(u.email)}`:`You\u2019re a guest, so your books stay in this browser. <button class="lnk" data-act="acct">Create a free account</button> to sync across phones.`):'';
-  el.innerHTML=`${ban?`<div class="ban">${ban}</div>`:''}<div class="tiles"><div><b>${done.length}</b><small>Books read</small></div><div><b>${pages.toLocaleString()}</b><small>Pages read</small></div><div><b>${streakOf()}</b><small>Day streak</small></div><div><b>${cur?esc(cur.title):'None'}</b><small>Active read</small></div></div>
+  el.innerHTML=`${ban?`<div class="ban">${ban}</div>`:''}<div class="tiles"><div><b>${done.length}</b><small>Books read</small></div><div><b>${pages.toLocaleString()}</b><small>Pages read</small></div><div><b>${streakOf()}</b><small>Day streak</small></div><div><b>${cur?esc(cur.title):'None'}</b><small>Active read</small></div></div>${goalHTML}
   ${cur&&cur.pages?`<div class="rc"><svg width="84" height="84" viewBox="0 0 84 84" role="img" aria-label="${pct}% read"><circle cx="42" cy="42" r="${R}" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="42" cy="42" r="${R}" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" transform="rotate(-90 42 42)"/><text x="42" y="47" text-anchor="middle" font-size="16" font-weight="700" fill="var(--ink)" font-family="Georgia,serif">${pct}%</text></svg><div class="meta"><small class="a">Now reading</small><div class="t">${esc(cur.title)}</div><div class="a">Page ${cur.page||0} of ${cur.pages}</div></div></div>`:''}`;
 }
+$('#fq').oninput=e=>{fq=e.target.value.trim().toLowerCase();render()};
+$('#fs').onchange=e=>{fs=e.target.value;render()};
 $('#dash').onclick=e=>{if(e.target.dataset.act==='acct')openAuth()};
 $('#acctBtn').onclick=openAuth;
 function openAuth(){
@@ -311,6 +329,48 @@ function openAuth(){
   d.showModal();
   const run=fn=>async()=>{try{await fn();d.close()}catch(e){$('#er').textContent=(e.code||e.message||'Error').replace('auth/','').replace(/-/g,' ')}};
   $('#gg').onclick=run(()=>c.google());$('#si').onclick=run(()=>c.signin($('#em').value,$('#pw').value));$('#su').onclick=run(()=>c.signup($('#em').value,$('#pw').value));
+}
+
+/* ---- Lumina AI inside the app ---- */
+const AIJSON=`You are Lumina, an advanced literary architect and recommendation engine: warm, articulate, like an expert independent bookseller.
+RULES: (1) 60/40 ratio: at most ONE major bestseller; at least 60% of picks acclaimed backlist, indie or under-the-radar titles. (2) Hard exclusion: never include a title containing my constraints, and never recommend a book already on my shelf. (3) Zero spoilers. (4) For AUDIOBOOK prefer award-winning narration. (5) Respect my length and release era (RECENT = last 3 years). (6) If inputs are vague, infer defaults. If pacing and mood conflict, prioritize pacing. (7) Only recommend real books you are certain exist.
+Reply with ONLY valid JSON, no markdown fences, exactly this shape:
+{"profile_summary":"2 sentences","recommendations":[{"title":"","author":"","year":0,"genre":"","page_count":0,"best_format":"Print|Ebook|Audiobook","pacing":"FAST|MEDIUM|SLOW","mood_tags":[""],"pitch":"2-3 sentences, spoiler-free","affinity_reason":"tie to my history","tropes":[""],"content_notes":""}],"wildcard":{"title":"","author":"","stretch_reason":"","anchor_reason":""},"book_club":["spoiler-free prompt 1","spoiler-free prompt 2 (for the top pick)"]}
+Give 4 recommendations.`;
+const aiHTML=()=>{
+  if(D.aiBusy)return '<p class="a" style="margin-top:12px">Lumina is reading your shelf\u2026</p>';
+  if(D.aiErr)return `<p role="alert" class="a" style="color:#C0392B;margin-top:12px">${esc(D.aiErr)}</p>`;
+  const a=D.ai;
+  if(!a)return SET.key?'':'<p class="a" style="margin-top:10px">Tip: add your Claude API key in the \u2261 settings and Lumina will answer right here.</p>';
+  const card=(x,i,body)=>`<div class="card"><div class="meta"><div class="t">${esc(x.title)}</div><div class="a">${esc(x.author)}</div>${body}<button class="btn" data-ar="${i}">Add to Want to read</button></div></div>`;
+  const recs=(a.recommendations||[]).map((x,i)=>card(x,i,`<div class="sub">${[x.year,x.genre,x.page_count?x.page_count+' pages':'',x.best_format,x.pacing].filter(Boolean).map(esc).join(' \u00b7 ')}</div><p style="margin:6px 0 0;font-size:14px">${esc(x.pitch)}</p><p class="a" style="margin:4px 0 0"><b>Why it fits you:</b> ${esc(x.affinity_reason)}</p><div class="sub" style="flex-wrap:wrap">${(x.tropes||[]).map(t=>`<span class="chip" style="padding:2px 8px;font-size:12px">${esc(t)}</span>`).join('')}</div>${x.content_notes?`<p class="a" style="margin:4px 0 0;font-size:12px">Content: ${esc(x.content_notes)}</p>`:''}`)).join('');
+  const w=a.wildcard&&a.wildcard.title?`<label>Wildcard</label>${card(a.wildcard,'w',`<p class="a" style="margin:6px 0 0"><b>The stretch:</b> ${esc(a.wildcard.stretch_reason)}</p><p class="a" style="margin:4px 0 0"><b>The anchor:</b> ${esc(a.wildcard.anchor_reason)}</p>`)}`:'';
+  const bc=(a.book_club||[]).length?`<label>Book club prompts</label><div class="ban"><ol style="margin:0;padding-left:18px">${a.book_club.map(q=>`<li style="margin-bottom:6px">${esc(q)}</li>`).join('')}</ol></div>`:'';
+  return `<div class="ban" style="margin-top:14px">${esc(a.profile_summary)}</div><div class="res">${recs}</div>${w}${bc}`;
+};
+async function luminaAI(){
+  if(D.aiBusy)return;
+  D.aiBusy=true;D.aiErr='';D.ai=null;renderDisc();
+  const f=b=>`${b.title}${b.author?' by '+b.author:''}`,loved=books.filter(b=>b.rating>=4||b.fav).map(b=>f(b)+(b.notes?` (my note: ${b.notes.slice(0,140)})`:'')+((b.moods||[]).length?` [${b.moods.join(', ')}]`:''));
+  const msg='MY REQUEST'+luminaPrompt().split('MY REQUEST')[1].replace(/\n\n--json$/,'')+`\n- Loved books with my notes: ${loved.join('; ')||'(none yet)'}\n- Currently reading: ${books.filter(b=>b.status==='reading').map(f).join('; ')||'(nothing)'}\n- Already on my shelf (do not recommend): ${books.map(b=>b.title).join('; ')||'(empty)'}`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':SET.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:SET.model||'claude-sonnet-5-5',max_tokens:3500,system:AIJSON,messages:[{role:'user',content:msg}]})});
+    if(r.status===401)throw new Error('Claude rejected your API key. Check it in the \u2261 settings.');
+    if(!r.ok)throw new Error('Claude could not answer right now (error '+r.status+').');
+    const j=await r.json(),t=j.content.filter(c=>c.type==='text').map(c=>c.text).join('').replace(/^```(?:json)?|```$/gm,'').trim();
+    D.ai=JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1));
+  }catch(e){D.aiErr=e instanceof SyntaxError?'Lumina\u2019s answer could not be read. Try again.':(e.message==='Failed to fetch'?'Could not reach Claude. Check your connection.':e.message)}
+  D.aiBusy=false;renderDisc();
+}
+async function addAI(i){
+  const x=i==='w'?D.ai.wildcard:D.ai.recommendations[+i];if(!x)return;
+  if(books.some(b=>b.title.toLowerCase()===String(x.title).toLowerCase())){toast('Already on your shelf');return}
+  addBook({title:x.title,author:x.author||'',pages:x.page_count||0});
+  const b=books[books.length-1],pc=String(x.pacing||'').toLowerCase(),fm=String(x.best_format||'').toLowerCase();
+  b.pacing=['Fast','Medium','Slow'].find(v=>v.toLowerCase()===pc)||'Medium';b.format=['Print','Ebook','Audiobook'].find(v=>v.toLowerCase()===fm)||'Print';
+  b.moods=Object.keys(MOODS).filter(m=>(x.mood_tags||[]).some(t=>String(t).toLowerCase()===m.toLowerCase()));save();render();
+  try{const j=await (await fetch(`https://openlibrary.org/search.json?limit=1&fields=key,cover_i,number_of_pages_median&q=${encodeURIComponent(x.title+' '+(x.author||''))}`)).json(),d=(j.docs||[])[0];
+    if(d&&d.cover_i){b.cover=`https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg`;b.pages=b.pages||d.number_of_pages_median||0;b.ol=b.ol||d.key;save();render()}}catch(e){}
 }
 
 render();
