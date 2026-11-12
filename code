@@ -3,5 +3,5 @@ Expand-Archive -Force .\My-Shelf.zip -DestinationPath .\My-Shelf-new
 Copy-Item .\My-Shelf-new\* .\My-Shelf\ -Recurse -Force
 cd .\My-Shelf
 git add .
-git commit -m "My Shelf v2"
+git commit -m "My Shelf v3 redesign"
 git push
