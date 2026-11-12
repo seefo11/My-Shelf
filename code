@@ -1,0 +1,7 @@
+cd $HOME\Downloads
+git clone https://github.com/seefo11/My-Shelf.git
+Expand-Archive -Force .\My-Shelf.zip -DestinationPath .\My-Shelf
+cd .\My-Shelf
+git add .
+git commit -m "My Shelf app"
+git push
