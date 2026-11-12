@@ -1,409 +1,98 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="My Shelf">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#2F5D50">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-180.png">
-<title>My Shelf</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f766e"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="My Shelf"><title>My Shelf</title>
 <style>
-:root{--bg:#F4F6F3;--surface:#FFFFFF;--ink:#1D2B2A;--mute:#66736F;--line:#DDE3DE;--accent:#2F5D50;--on:#fff;--brass:#B7892B;color-scheme:light}
-@media(prefers-color-scheme:dark){:root{--bg:#101614;--surface:#19211F;--ink:#E8EEEA;--mute:#93A29C;--line:#2A3532;--accent:#7FB8A4;--on:#0E1513;--brass:#E0B455;color-scheme:dark}}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
-button,input,textarea,select{font:inherit;color:inherit}
-button{cursor:pointer;border:0;background:none}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-header{display:flex;align-items:center;gap:8px;padding:14px 16px 6px}
-h1{font:700 28px/1.1 "Iowan Old Style",Georgia,serif;margin:0;flex:1;letter-spacing:-.01em}
-.ib{width:40px;height:40px;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-size:20px;display:grid;place-items:center}
-.ib.p{background:var(--accent);color:var(--on);border-color:var(--accent);font-size:24px}
-.count{padding:0 16px 8px;color:var(--mute);font-size:14px}
-main{flex:1;overflow:auto;padding:4px 16px 24px;-webkit-overflow-scrolling:touch}
-.list{display:grid;gap:10px;max-width:640px;margin:0 auto}
-.card{display:flex;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:left;width:100%}
-.cv{width:56px;height:84px;border-radius:4px;flex:none;object-fit:cover;background:var(--line);display:grid;place-items:center;color:#fff;font:700 11px/1.2 Georgia,serif;text-align:center;padding:4px;overflow:hidden}
-.cv.lg{width:84px;height:126px}
-.meta{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
-.t{font:600 17px/1.25 "Iowan Old Style",Georgia,serif;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.a{color:var(--mute);font-size:14px}
-.bar{height:6px;border-radius:3px;background:var(--line);margin-top:auto;overflow:hidden}
-.bar i{display:block;height:100%;background:var(--accent)}
-.sub{font-size:13px;color:var(--mute);display:flex;gap:8px;align-items:center}
-.star{color:var(--brass)}
-.empty{text-align:center;color:var(--mute);padding:48px 24px;max-width:340px;margin:0 auto}
-.empty h2{font:600 20px Georgia,serif;color:var(--ink);margin:0 0 6px}
-.btn{background:var(--accent);color:var(--on);border-radius:10px;padding:11px 18px;font-weight:600}
-.btn.s{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
-.btn.d{background:none;color:#C0392B}
-nav{display:flex;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;padding:10px 2px 9px;font-size:12px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px}
-nav button span{font-size:20px;line-height:1}
-nav button[aria-selected=true]{color:var(--accent);font-weight:700}
-dialog{margin:auto auto 0;width:100%;max-width:560px;max-height:92vh;border:0;border-radius:18px 18px 0 0;background:var(--bg);color:var(--ink);padding:18px 16px calc(18px + env(safe-area-inset-bottom));overflow:auto}
-dialog::backdrop{background:rgba(0,0,0,.45)}
-.row{display:flex;gap:12px;align-items:flex-start}
-.seg{display:flex;background:var(--line);border-radius:10px;padding:3px;gap:3px;margin:14px 0}
-.seg button{flex:1;padding:8px 2px;border-radius:8px;font-size:13px;color:var(--mute)}
-.seg button[aria-pressed=true]{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.15)}
-label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
-input[type=text],input[type=search],input[type=number],textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
-textarea{min-height:110px;resize:vertical}
-input[type=range]{width:100%;accent-color:var(--accent)}
-.stars button{font-size:30px;color:var(--line);padding:0 2px}
-.stars button.on{color:var(--brass)}
-.two{display:flex;gap:10px}.two>div{flex:1}
-.res{display:grid;gap:8px;margin-top:12px}
-.fav{font-size:24px;color:var(--mute)}.fav.on{color:#D6455D}
-.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
-.stat div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
-.stat b{display:block;font:700 26px Georgia,serif}.stat small{color:var(--mute)}
-.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:99}
-.toast.on{opacity:1}
-.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:8px 14px;border-radius:20px;border:1px solid var(--line);background:var(--surface);font-size:14px}.chip[aria-pressed=true]{background:var(--accent);color:var(--on);border-color:var(--accent)}
-.card .btn{padding:7px 12px;font-size:13px;margin-top:auto;align-self:flex-start}
-.ban{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:13px;color:var(--mute);margin-bottom:10px}.lnk{color:var(--accent);font-weight:700;text-decoration:underline}
-.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}@media(min-width:520px){.tiles{grid-template-columns:repeat(4,1fr)}}
-.tiles div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}.tiles b{display:block;font:700 20px Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tiles small{font-size:12px;color:var(--mute)}
-.rc{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
-#dash:empty{display:none}
-.tools{display:flex;gap:8px;margin-bottom:10px}.tools[hidden]{display:none}
-select{padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
-</head>
-<body>
-<header>
-  <h1 id="title">My Shelf</h1>
-  <button class="ib" id="acctBtn" aria-label="Account and cloud sync">👤</button>
-  <button class="ib" id="menuBtn" aria-label="Stats and backup">≡</button>
-  <button class="ib p" id="addBtn" aria-label="Add a book">+</button>
-</header>
-<div class="count" id="count"></div>
-<main><div class="list" id="dash"></div><div class="list tools" id="tools"><input type="search" id="fq" placeholder="Search your shelf" aria-label="Search your shelf" style="flex:1"><select id="fs" aria-label="Sort"><option value="upd">Recent</option><option value="title">Title</option><option value="rating">Rating</option></select></div><div class="list" id="list"></div></main>
-<nav id="tabs" role="tablist"></nav>
-<dialog id="add"></dialog>
-<dialog id="detail"></dialog>
-<dialog id="menu"></dialog>
-<dialog id="auth"></dialog>
-<div class="toast" id="toast" role="status"></div>
-<script src="firebase-config.js"></script>
+:root{--bg:#f1f4f2;--card:#fff;--ink:#12302b;--mut:#5d7570;--acc:#0f766e;--gold:#d99a1e;--line:#d8e2de;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1514;--card:#16201f;--ink:#e6f0ed;--mut:#8da8a2;--acc:#2dd4bf;--gold:#f0b429;--line:#26363a;color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,sans-serif;padding:env(safe-area-inset-top) 0 calc(90px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px 4px}h1{font:700 28px ui-serif,Georgia,serif;margin:0}#st{font-size:12px;color:var(--mut)}
+#tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;position:sticky;top:env(safe-area-inset-top);background:var(--bg);z-index:5}
+#tabs button{flex:none;border:0;background:none;color:var(--mut);font:600 15px inherit;padding:8px 12px;border-bottom:3px solid transparent}#tabs .on{color:var(--ink);border-color:var(--acc)}
+#bn,#inst{margin:8px 16px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--gold) 22%,var(--card));font-size:14px}
+#q{display:block;width:calc(100% - 32px);margin:8px 16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:16px}
+#main{padding:0 16px;max-width:640px;margin:auto}
+.card{background:var(--card);border-left:6px solid var(--acc);border-radius:6px 12px 12px 6px;padding:12px 14px;margin:10px 0}
+.top{display:flex;justify-content:space-between;gap:8px}.top b{font:700 18px ui-serif,Georgia,serif;display:block}small{color:var(--mut)}
+.top>button{border:0;background:none;font-size:24px;color:var(--gold);padding:0 4px}
+.bar{height:8px;background:var(--line);border-radius:4px;margin:10px 0 6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}
+.act{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}.act span{flex:1;font-size:13px;color:var(--mut);min-width:90px}
+button{font:600 14px inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px}button.pri{background:var(--acc);color:#fff;border:0}
+.empty{text-align:center;color:var(--mut);padding:40px 0}
+#fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;border:0;background:var(--acc);color:#fff;font-size:32px;box-shadow:0 4px 14px #0004}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.stats div{background:var(--card);border-radius:12px;padding:12px;color:var(--mut);font-size:13px}.stats b{display:block;font:700 28px ui-serif,Georgia,serif;color:var(--ink)}
+.chart{display:flex;gap:8px;height:110px;align-items:flex-end;background:var(--card);border-radius:12px;padding:12px;margin-bottom:12px}.chart div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.chart i{width:100%;background:var(--acc);border-radius:4px 4px 0 0;min-height:2px}
+.panel{display:grid;gap:10px;margin-top:10px}.panel h3{margin:10px 0 0}.panel p{margin:0;color:var(--mut);font-size:14px}
+dialog{width:min(92vw,440px);border:0;border-radius:16px;background:var(--card);color:var(--ink);padding:16px}dialog::backdrop{background:#0008}
+dialog input,dialog select,dialog textarea{width:100%;margin:5px 0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:16px}.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row{display:flex;gap:8px;margin-top:8px}.row button{flex:1}
+</style></head><body>
+<header><h1>My Shelf</h1><span id="st"></span></header>
+<nav id="tabs"></nav><div id="bn" hidden></div><div id="inst" hidden>Install it: tap Share, then Add to Home Screen. Safari can erase data of unused browser tabs after about 7 days; installed apps are exempt.</div>
+<input id="q" type="search" placeholder="Search title or author"><main id="main"></main>
+<button id="fab" aria-label="Add book">+</button><dialog id="dlg"></dialog><input id="file" type="file" accept=".json,application/json" hidden>
 <script>
-const KEY='myshelf.v1',$=s=>document.querySelector(s);
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let books=[];try{books=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){}
-let tab=localStorage.getItem('myshelf.tab')||'reading';
-const TABS=[['reading','Reading','📖'],['want','Want to read','🔖'],['fav','Favorites','♥'],['done','Finished','✓'],['disc','Discover','✦']];
-const NAMES={reading:'Currently reading',want:'Want to read',done:'Finished'};
-let SET={};try{SET=JSON.parse(localStorage.getItem('myshelf.set')||'{}')}catch(e){}
-const saveSet=()=>{try{localStorage.setItem('myshelf.set',JSON.stringify(SET))}catch(e){}};
-let fq='',fs='upd';
-const today=()=>new Date().toLocaleDateString('en-CA');
-let localUpd=+localStorage.getItem('myshelf.upd')||0,pt;
-const store=()=>{try{localStorage.setItem(KEY,JSON.stringify(books));localStorage.setItem('myshelf.upd',localUpd)}catch(e){toast('Could not save. Storage is full or blocked.')}};
-const save=()=>{localUpd=Date.now();store();const c=window.cloud;if(c&&c.push){clearTimeout(pt);pt=setTimeout(()=>c.push(books,localUpd).catch(()=>toast('Cloud save failed. Check your Firestore rules.')),600)}};
-window.onCloud=(d,first)=>{
-  if(d===undefined){toast('Cloud sync error. Check your Firestore rules.');return}
-  if(!d){save();return}
-  if(first&&books.length){const m=new Map(d.books.map(b=>[b.id,b]));books.forEach(b=>{const o=m.get(b.id);if(!o||(b.upd||0)>(o.upd||0))m.set(b.id,b)});books=[...m.values()];save();render();return}
-  if(d.upd>localUpd){books=d.books;localUpd=d.upd;store();render()}
-};
-window.onAuth=()=>render();
-addEventListener('cloud-ready',()=>render());
-const streakOf=()=>{const s=new Set(books.flatMap(b=>b.days||[]));let n=0,d=new Date();if(!s.has(today()))d.setDate(d.getDate()-1);while(s.has(d.toLocaleDateString('en-CA'))){n++;d.setDate(d.getDate()-1)}return n};
-let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
-const get=id=>books.find(b=>b.id===id);
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-function cover(b,cls=''){
-  if(b.cover)return `<img class="cv ${cls}" src="${esc(b.cover)}" alt="" loading="lazy" onerror="this.outerHTML=ph(${esc(JSON.stringify(b.title)).replace(/&quot;/g,'&quot;')},'${cls}')">`;
-  return ph(b.title,cls)}
-function ph(t,cls){let h=0;for(const c of t)h=(h*31+c.charCodeAt(0))%360;return `<div class="cv ${cls}" style="background:hsl(${h} 30% 34%)">${esc(t)}</div>`}
-const stars=r=>r?'<span class="star">'+'★'.repeat(r)+'</span>':'';
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const day=(d=new Date())=>new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const ago=t=>{const d=Math.floor((Date.now()-t)/864e5);return d?d+'d ago':'today'},note=m=>$('#st').textContent=m;
+let dbp;const db=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('myshelf',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+const tx=async(m,f)=>{const d=await db();return new Promise((res,rej)=>{const t=d.transaction('kv',m),q=f(t.objectStore('kv'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})};
+const dbGet=k=>tx('readonly',o=>o.get(k)),dbSet=(k,v)=>tx('readwrite',o=>o.put(v,k)),dbKeys=()=>tx('readonly',o=>o.getAllKeys());
+let S,tab='reading',q='',tm;
+const TABS=[['reading','Reading'],['want','Want to read'],['done','Finished'],['fav','♥ Favorites'],['stats','Stats'],['backup','Backup']];
+async function load(){let a,b;try{a=await dbGet('main')}catch{}try{b=JSON.parse(localStorage.getItem('ms'))}catch{}
+ S=[a,b].filter(x=>x&&Array.isArray(x.books)).sort((x,y)=>y.u-x.u)[0]||{books:[],goal:12,lb:0,ch:0,u:0}}
+function save(now){S.u=Date.now();S.ch++;clearTimeout(tm);if(now)persist();else tm=setTimeout(persist,400);render()}
+async function persist(){clearTimeout(tm);try{localStorage.setItem('ms',JSON.stringify(S))}catch{}
+ try{await dbSet('main',S);note('Saved ✓')}catch{note('⚠ Save failed: back up now')}}
+const pct=b=>b.p?Math.min(100,Math.round(b.cur/b.p*100)):0;
+const card=b=>`<article class="card" data-id="${b.id}"><div class="top"><div data-a="edit"><b>${esc(b.t)}</b><small>${esc(b.a)}${b.r?' '+'★'.repeat(b.r):''}</small></div><button data-a="fav" aria-label="Favorite">${b.fav?'♥':'♡'}</button></div>`+
+(b.st=='reading'?`<div class="bar"><i style="width:${pct(b)}%"></i></div><div class="act"><span>Page ${b.cur}${b.p?' of '+b.p+' ('+pct(b)+'%)':''}</span><button data-a="add" data-n="10">+10</button><button data-a="add" data-n="25">+25</button><button data-a="log">Log</button><button data-a="done">Finish</button></div>`:
+b.st=='want'?`<div class="act"><button class="pri" data-a="start">Start reading</button></div>`:`<div class="act"><span>Finished ${esc(b.fin||'')}</span></div>`)+`</article>`;
 function render(){
-  $('#tabs').innerHTML=TABS.map(([k,n,i])=>`<button role="tab" aria-selected="${k===tab}" data-t="${k}"><span>${i}</span>${n}</button>`).join('');
-  const label=TABS.find(t=>t[0]===tab)[1];
-  renderDash();
-  if(tab==='disc'){$('#title').textContent=label;$('#count').textContent='';renderDisc();return}
-  const list=books.filter(b=>(tab==='fav'?b.fav:b.status===tab)&&(!fq||(b.title+' '+b.author).toLowerCase().includes(fq))).sort((a,b)=>fs==='title'?a.title.localeCompare(b.title):fs==='rating'?(b.rating||0)-(a.rating||0):b.upd-a.upd);
-  $('#title').textContent=label;
-  $('#count').textContent=list.length?`${list.length} ${list.length===1?'book':'books'}`:'';
-  $('#list').innerHTML=list.length?list.map(b=>{
-    const pct=b.pages?Math.min(100,Math.round((b.page||0)/b.pages*100)):0;
-    return `<button class="card" data-id="${b.id}">${cover(b)}<div class="meta"><div class="t">${esc(b.title)}</div><div class="a">${esc(b.author)}</div>
-    <div class="sub">${b.pacing?`<span>${esc(b.pacing)} · ${esc(b.format||"Print")}</span>`:""}${stars(b.rating)}${b.fav&&tab!=='fav'?'<span style="color:#D6455D">♥</span>':''}${tab==='fav'?esc(NAMES[b.status]):''}${b.status==='reading'&&b.pages?`<span>${b.page||0} of ${b.pages} pages</span>`:''}</div>
-    ${b.status==='reading'&&b.pages?`<div class="bar"><i style="width:${pct}%"></i></div>`:''}</div></button>`}).join(''):
-    `<div class="empty"><h2>${{reading:'Nothing on your nightstand',want:'Your list is empty',fav:'No favorites yet',done:'No finished books yet'}[tab]}</h2><p>${{reading:'Add the book you\u2019re reading and track your pages.',want:'Add books you want to read next.',fav:'Tap the heart on any book to keep it here.',done:'Books you finish will collect here.'}[tab]}</p><button class="btn" data-act="add">Add a book</button></div>`;
-}
-$('#tabs').onclick=e=>{const b=e.target.closest('[data-t]');if(b){tab=b.dataset.t;localStorage.setItem('myshelf.tab',tab);render();$('main').scrollTop=0}};
-$('#list').oninput=e=>{if(e.target.id==='av')D.avoid=e.target.value;if(e.target.id==='nr')D.narr=e.target.value};
-$('#list').onclick=e=>{if(tab==='disc'){discClick(e);return}const c=e.target.closest('.card');if(c)openDetail(c.dataset.id);if(e.target.dataset.act==='add')openAdd()};
-$('#addBtn').onclick=()=>openAdd();
-$('#menuBtn').onclick=openMenu;
-document.querySelectorAll('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close()}));
-
-/* ---- Add ---- */
-let st;
-function openAdd(){
-  const d=$('#add');
-  d.innerHTML=`<h2 style="font:700 22px Georgia,serif;margin:0 0 12px">Add a book</h2>
-  <input type="search" id="q" placeholder="Search by title or author" autocomplete="off" aria-label="Search books">
-  <div class="res" id="res"><p class="a" style="margin:8px 0">Search online, or add a book by hand.</p></div>
-  <button class="btn s" id="manual" style="width:100%;margin-top:12px">Add by hand</button>`;
-  d.showModal();
-  $('#q').oninput=e=>{clearTimeout(st);st=setTimeout(()=>search(e.target.value.trim()),400)};
-  $('#manual').onclick=()=>{d.innerHTML=`<h2 style="font:700 22px Georgia,serif;margin:0 0 4px">Add by hand</h2>
-  <label for="mt">Title</label><input type="text" id="mt"><label for="ma">Author</label><input type="text" id="ma">
-  <label for="mp">Pages (optional)</label><input type="number" id="mp" min="1" inputmode="numeric">
-  <button class="btn" id="msave" style="width:100%;margin-top:16px">Save book</button>`;
-  $('#msave').onclick=()=>{const t=$('#mt').value.trim();if(!t){toast('Enter a title');return}
-   addBook({title:t,author:$('#ma').value.trim(),pages:+$('#mp').value||0})}};
-}
-async function search(q){
-  const r=$('#res');if(q.length<2){return}
-  r.innerHTML='<p class="a">Searching…</p>';
-  try{
-    const u=`https://openlibrary.org/search.json?limit=12&fields=key,title,author_name,cover_i,number_of_pages_median&q=${encodeURIComponent(q)}`;
-    const j=await (await fetch(u)).json();
-    window._r=j.docs||[];
-    r.innerHTML=window._r.length?window._r.map((x,i)=>`<button class="card" data-i="${i}">${x.cover_i?`<img class="cv" src="https://covers.openlibrary.org/b/id/${x.cover_i}-S.jpg" alt="">`:ph(x.title,'')}<div class="meta"><div class="t">${esc(x.title)}</div><div class="a">${esc((x.author_name||[]).slice(0,2).join(', '))}</div></div></button>`).join(''):'<p class="a">No matches. Try different words, or add the book by hand.</p>';
-    r.onclick=e=>{const c=e.target.closest('[data-i]');if(!c)return;const x=window._r[c.dataset.i];
-      addBook({title:x.title,author:(x.author_name||[])[0]||'',pages:x.number_of_pages_median||0,cover:x.cover_i?`https://covers.openlibrary.org/b/id/${x.cover_i}-M.jpg`:'',ol:x.key})};
-  }catch(e){r.innerHTML='<p class="a">Search needs an internet connection. You can still add a book by hand.</p>'}
-}
-function addBook(o){
-  if(o.ol&&books.some(b=>b.ol===o.ol)){toast('Already on your shelf');return}
-  const status=tab==='reading'?'reading':tab==='done'?'done':'want';
-  books.push({pacing:'Medium',format:'Print',moods:[],days:[],id:uid(),title:o.title,author:o.author||'',pages:o.pages||0,cover:o.cover||'',ol:o.ol||'',status,fav:tab==='fav',page:status==='done'?(o.pages||0):0,rating:0,notes:'',upd:Date.now()});
-  save();$('#add').close();render();toast('Added to '+(tab==='fav'?'Favorites':TABS.find(t=>t[0]===status)[1]));
-}
-
-/* ---- Detail ---- */
-function patch(id,p){const b=get(id);if((p.page!==undefined&&p.page>(b.page||0))||p.status==='done')p.days=[...new Set([...(b.days||[]),today()])];if(p.status==='done')p.end=Date.now();Object.assign(b,p,{upd:Date.now()});save();render()}
-function fill(id){
-  const b=get(id),d=$('#detail');
-  d.innerHTML=`<div class="row">${cover(b,'lg')}<div class="meta" style="gap:4px"><div class="t" style="font-size:20px;-webkit-line-clamp:4">${esc(b.title)}</div><div class="a">${esc(b.author)}</div></div>
-  <button class="fav ${b.fav?'on':''}" id="fv" aria-label="${b.fav?'Remove from favorites':'Add to favorites'}" aria-pressed="${b.fav}">${b.fav?'♥':'♡'}</button></div>
-  <div class="seg" role="group" aria-label="Shelf">${['want','reading','done'].map(s=>`<button data-s="${s}" aria-pressed="${b.status===s}">${s==='want'?'Want to read':s==='reading'?'Reading':'Finished'}</button>`).join('')}</div>
-  <label>Pacing</label><div class="seg" style="margin:0" role="group">${['Fast','Medium','Slow'].map(v=>`<button data-pc="${v}" aria-pressed="${b.pacing===v}">${v}</button>`).join('')}</div>
-  <label>Format</label><div class="seg" style="margin:0" role="group">${['Print','Ebook','Audiobook'].map(v=>`<button data-fm="${v}" aria-pressed="${b.format===v}">${v}</button>`).join('')}</div>
-  <label>Mood tags</label><div class="chips">${Object.keys(MOODS).map(m=>`<button class="chip" data-mo="${esc(m)}" aria-pressed="${(b.moods||[]).includes(m)}">${esc(m)}</button>`).join('')}</div>
-  <div class="two"><div><label for="pg">Page I\u2019m on</label><input type="number" id="pg" min="0" inputmode="numeric" value="${b.page||0}"></div>
-  <div><label for="tp">Total pages</label><input type="number" id="tp" min="0" inputmode="numeric" value="${b.pages||0}"></div></div>
-  <input type="range" id="rg" min="0" max="${b.pages||100}" value="${b.page||0}" aria-label="Reading progress" ${b.pages?'':'disabled'}>
-  <label>Rating</label><div class="stars" role="group" aria-label="Rating">${[1,2,3,4,5].map(n=>`<button data-r="${n}" class="${n<=b.rating?'on':''}" aria-label="${n} stars">★</button>`).join('')}</div>
-  <label for="nt">Notes</label><textarea id="nt" placeholder="Thoughts, quotes, who recommended it">${esc(b.notes)}</textarea>
-  <button class="btn d" id="del" style="width:100%;margin-top:10px">Remove from My Shelf</button>`;
-  d.onclick=e=>{if(e.target===d){d.close();return}
-    const t=e.target.closest('button');if(!t)return;
-    if(t.id==='fv'){patch(id,{fav:!b.fav});fill(id)}
-    else if(t.dataset.pc){patch(id,{pacing:t.dataset.pc});fill(id)}
-    else if(t.dataset.fm){patch(id,{format:t.dataset.fm});fill(id)}
-    else if(t.dataset.mo){const m=t.dataset.mo,a=b.moods||[];patch(id,{moods:a.includes(m)?a.filter(x=>x!==m):[...a,m]});fill(id)}
-    else if(t.dataset.s){const s=t.dataset.s,p={status:s};if(s==='done'&&b.pages)p.page=b.pages;patch(id,p);fill(id)}
-    else if(t.dataset.r){const n=+t.dataset.r;patch(id,{rating:b.rating===n?0:n});fill(id)}
-    else if(t.id==='del'&&confirm('Remove this book from My Shelf?')){books=books.filter(x=>x.id!==id);save();d.close();render()}};
-  const pg=$('#pg'),tp=$('#tp'),rg=$('#rg');
-  pg.oninput=()=>{const v=Math.max(0,+pg.value||0);rg.value=v;patch(id,{page:v})};
-  rg.oninput=()=>{pg.value=rg.value;patch(id,{page:+rg.value})};
-  tp.oninput=()=>{const v=Math.max(0,+tp.value||0);rg.max=v||100;rg.disabled=!v;patch(id,{pages:v})};
-  $('#nt').oninput=e=>patch(id,{notes:e.target.value});
-}
-function openDetail(id){fill(id);$('#detail').showModal()}
-
-/* ---- Stats + backup ---- */
-function openMenu(){
-  const d=$('#menu'),done=books.filter(b=>b.status==='done'),y=new Date().getFullYear();
-  const pages=done.reduce((s,b)=>s+(b.pages||0),0)+books.filter(b=>b.status==='reading').reduce((s,b)=>s+(b.page||0),0);
-  const rated=books.filter(b=>b.rating);const avg=rated.length?(rated.reduce((s,b)=>s+b.rating,0)/rated.length).toFixed(1):'–';
-  d.innerHTML=`<h2 style="font:700 22px Georgia,serif;margin:0">Your reading</h2>
-  <div class="stat"><div><b>${books.length}</b><small>books on shelf</small></div><div><b>${done.length}</b><small>finished</small></div><div><b>${pages.toLocaleString()}</b><small>pages read</small></div><div><b>${avg}</b><small>average rating</small></div></div>
-  <label for="goal">Reading goal this year (books)</label><input type="number" id="goal" min="0" inputmode="numeric" value="${SET.goal||''}">
-  <label for="ak">Claude API key (optional: Lumina answers inside the app)</label><input type="password" id="ak" autocomplete="off" placeholder="sk-ant-..." value="${esc(SET.key||'')}">
-  <label for="am">Claude model</label><input type="text" id="am" value="${esc(SET.model||'claude-sonnet-5-5')}">
-  <p class="a" style="margin:6px 0 14px;font-size:13px">Your key is stored only on this device and sent only to Anthropic. Use a key with a low spend limit, and never on a shared phone.</p>
-  <p class="a" style="margin:0 0 10px">Everything saves on this phone automatically. Make a backup before you clear Safari data or switch phones.</p>
-  <button class="btn" id="exp" style="width:100%">Download backup</button>
-  <button class="btn s" id="imp" style="width:100%;margin-top:8px">Restore from backup</button>
-  <input type="file" id="file" accept="application/json,.json" hidden>`;
-  d.showModal();
-  $('#goal').oninput=e=>{SET.goal=+e.target.value||0;saveSet();render()};
-  $('#ak').oninput=e=>{SET.key=e.target.value.trim();saveSet()};
-  $('#am').oninput=e=>{SET.model=e.target.value.trim();saveSet()};
-  $('#exp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(books,null,1)],{type:'application/json'}));a.download='my-shelf-backup.json';a.click()};
-  $('#imp').onclick=()=>$('#file').click();
-  $('#file').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());if(!Array.isArray(j))throw 0;
-    const have=new Set(books.map(b=>b.id));j.forEach(b=>{if(b&&b.title&&!have.has(b.id))books.push({...b,id:b.id||uid(),upd:b.upd||Date.now()})});
-    save();render();d.close();toast('Backup restored')}catch(err){toast('That file is not a My Shelf backup')}};
-}
-
-/* ---- Discover (Lumina) ---- */
-const D={ai:null,aiBusy:false,aiErr:'',mood:'',pace:'Medium',avoid:'',fmt:'ANY',len:'ANY',era:'ANY',narr:'',json:false,res:null,busy:false};
-const SEG=(l,k,o)=>`<label>${l}</label><div class="seg" style="margin:0">${o.map(([v,t])=>`<button data-k="${k}" data-v="${v}" aria-pressed="${D[k]===v}">${t}</button>`).join('')}</div>`;
-const MOODS={'Cozy':['cozy mystery','cozy fantasy','heartwarming'],'Melancholic':['grief','loss','melancholy'],'Mind-bending':['unreliable narrator','metafiction','philosophical fiction'],'Uplifting':['feel-good','friendship','hope'],'Dark & gothic':['gothic fiction','dark fantasy','horror'],'Nostalgic':['coming of age','childhood','family saga'],'Atmospheric':['atmospheric','literary fiction','magic realism'],'High-tension':['thriller','suspense','psychological thriller']};
-const LUMINA=`You are Lumina, an advanced literary architect and recommendation engine: warm, articulate, like an expert independent bookseller.
-RULES: (1) 60/40 ratio: at most ONE major bestseller; at least 60% of picks must be acclaimed backlist, indie or under-the-radar titles. (2) Hard exclusion: drop any title containing my listed constraints. (3) Zero spoilers. (4) If I choose AUDIOBOOK, prioritize award-winning narration (Audie winners, iconic performances) that fits my narrator preference. (5) Respect my length (SHORT <300 pages, MEDIUM 300-500, EPIC 500+) and release era (CLASSIC, BACKLIST, RECENT = last 3 years). (6) If inputs are vague, infer defaults and say so. If pacing and mood conflict, prioritize pacing.
-OUTPUT in markdown:
-### Reader Profile Synthesis: a 2-sentence blockquote.
-### Core Recommendations: 3-4 books, each with Metadata (year | genre | pages or audio duration), Format Recommendation (with narration notes if audio), Pacing Precision (FAST/MEDIUM/SLOW + 1 sentence), Mood Profile (3 tags), Narrative Archetype, The Hook (2-3 sentences), Affinity Match (tie to my history), Trope & Vibe Tags (with content notes).
-### Feature Modules: A. The Wildcard Matrix (1 title outside my usual genres: The Stretch, The Anchor). B. Book Club Discussion Starter (2 spoiler-free prompts for the top pick).
-JSON MODE: if my request ends with --json, output ONLY JSON: {"profile_summary","recommendations":[{"title","author","year","genre","best_format","pacing","mood_tags":[],"pitch","affinity_reason","tropes":[]}],"wildcard":{"title","author","stretch_reason","anchor_reason"}}.`;
-function luminaPrompt(){
-  const f=b=>`${b.title}${b.author?' by '+b.author:''}`,L=books.filter(b=>b.rating>=4||b.fav).map(f),H=books.filter(b=>b.rating&&b.rating<=2).map(f);
-  return `${LUMINA}\n\n---\nMY REQUEST\n- Core mood: ${D.mood||'(not set, infer one)'}\n- Pacing: ${D.pace.toUpperCase()}\n- Loved titles: ${L.join('; ')||'(none yet)'}\n- Disliked titles: ${H.join('; ')||'(none yet)'}\n- Constraints and exclusions: ${D.avoid||'(none)'}\n- Format: ${D.fmt}${D.fmt==='AUDIOBOOK'&&D.narr?` (narrator style: ${D.narr})`:''}\n- Length: ${D.len}\n- Release era: ${D.era}${D.json?'\n\n--json':''}`}
-function renderDisc(){
-  const r=D.res;
-  $('#list').innerHTML=`<p class="a" style="margin:0">Pick a mood and a pace. Your ratings and dealbreakers shape the picks.</p>
-  <label>Mood</label><div class="chips">${Object.keys(MOODS).map(m=>`<button class="chip" data-m="${esc(m)}" aria-pressed="${D.mood===m}">${esc(m)}</button>`).join('')}</div>
-  <label>Pacing</label><div class="seg" style="margin:0">${['Fast','Medium','Slow'].map(p=>`<button data-p="${p}" aria-pressed="${D.pace===p}">${p}</button>`).join('')}</div>
-  ${SEG('Format','fmt',[['ANY','Any'],['PRINT','Print'],['EBOOK','Ebook'],['AUDIOBOOK','Audio']])}${D.fmt==='AUDIOBOOK'?`<input type="text" id="nr" value="${esc(D.narr)}" placeholder="Narrator: full cast, single voice, dramatic" style="margin-top:8px" aria-label="Narrator style">`:''}${SEG('Length (short under 300 pages, epic 500+)','len',[['ANY','Any'],['SHORT','Short'],['MEDIUM','Medium'],['EPIC','Epic']])}${SEG('Release era (recent = last 3 years)','era',[['ANY','Any'],['CLASSIC','Classic'],['BACKLIST','Backlist'],['RECENT','Recent']])}
-  <label for="av">Dealbreakers (separate with commas)</label><input type="text" id="av" value="${esc(D.avoid)}" placeholder="love triangle, gore">
-  <div class="two" style="margin-top:14px"><button class="btn" data-a="find" style="flex:1">Find books</button><button class="btn s" data-a="ask" style="flex:1">Ask Lumina</button></div>
-  ${aiHTML()}<div class="res">${D.busy?'<p class="a">Looking…</p>':r?(r.length?r.map((x,i)=>`<div class="card"><img class="cv" src="https://covers.openlibrary.org/b/id/${x.cover_i}-S.jpg" alt=""><div class="meta"><div class="t">${esc(x.title)}</div><div class="a">${esc((x.author_name||[])[0]||'')}</div><div class="sub">${x.first_publish_year||''}${x.number_of_pages_median?` · ${x.number_of_pages_median} pages`:''}${x.ratings_average?` · ★ ${x.ratings_average.toFixed(1)}`:''}</div><button class="btn" data-r="${i}">Add to Want to read</button></div></div>`).join(''):'<p class="a">Nothing matched. Try another mood or fewer dealbreakers.</p>'):''}</div>`}
-async function discClick(e){
-  const t=e.target.closest('button');if(!t)return;
-  if(t.dataset.m){D.mood=t.dataset.m;renderDisc()}
-  else if(t.dataset.ar!==undefined)addAI(t.dataset.ar);
-  else if(t.dataset.k){D[t.dataset.k]=t.dataset.v;renderDisc()}
-  else if(t.dataset.p){D.pace=t.dataset.p;renderDisc()}
-  else if(t.dataset.r){const x=D.res[t.dataset.r];addBook({title:x.title,author:(x.author_name||[])[0]||'',pages:x.number_of_pages_median||0,cover:`https://covers.openlibrary.org/b/id/${x.cover_i}-M.jpg`,ol:x.key});D.res=D.res.filter(y=>y!==x);renderDisc()}
-  else if(t.dataset.a==='find')find();
-  else if(t.dataset.a==='ask')askLumina();
-}
-async function find(){
-  if(!D.mood){toast('Pick a mood first');return}
-  D.busy=true;D.res=null;renderDisc();
-  const bad=D.avoid.toLowerCase().split(',').map(s=>s.trim()).filter(Boolean),have=new Set(books.map(b=>b.ol)),titles=new Set(books.map(b=>b.title.toLowerCase()));
-  try{
-    const rs=await Promise.all(MOODS[D.mood].map(s=>fetch(`https://openlibrary.org/search.json?limit=40&sort=rating&fields=key,title,author_name,cover_i,number_of_pages_median,first_publish_year,ratings_average,ratings_count,subject&subject=${encodeURIComponent(s)}`).then(r=>r.json()).then(j=>j.docs||[])));
-    const Y=new Date().getFullYear(),[lo,hi]=D.len!=='ANY'?{SHORT:[0,299],MEDIUM:[300,500],EPIC:[500,5000]}[D.len]:{Fast:[0,380],Medium:[200,550],Slow:[350,5000]}[D.pace],seen=new Set(),ok=x=>{const n=x.number_of_pages_median,y=x.first_publish_year;if(n&&(n<lo||n>hi))return false;if(D.era==='ANY')return true;if(!y)return false;return D.era==='CLASSIC'?y<1970:D.era==='BACKLIST'?y>=1970&&y<Y-3:y>=Y-3},minR=D.era==='RECENT'?3:10;
-    let pool=rs.flat().filter(x=>!seen.has(x.key)&&seen.add(x.key)&&x.cover_i&&x.ratings_count>=minR&&!have.has(x.key)&&!titles.has(x.title.toLowerCase())&&ok(x)&&!bad.some(w=>(x.title+' '+(x.subject||[]).join(' ')).toLowerCase().includes(w)));
-    pool.sort((a,b)=>(b.ratings_average||0)-(a.ratings_average||0));
-    let pop=0;D.res=[];
-    for(const x of pool){const big=x.ratings_count>2000;if(big&&pop>=1)continue;if(big)pop++;D.res.push(x);if(D.res.length>=5)break}
-  }catch(err){D.res=null;toast('Discover needs an internet connection')}
-  D.busy=false;renderDisc();
-}
-function askLumina(){
-  if(SET.key)return luminaAI();
-  const p=luminaPrompt(),d=$('#menu');
-  try{navigator.clipboard.writeText(p)}catch(e){}
-  d.innerHTML=`<h2 style="font:700 22px Georgia,serif;margin:0 0 6px">Ask Lumina</h2><p class="a" style="margin:0 0 8px">This request includes your rated and favorite books. Copy it, then paste it into a Claude chat.</p>
-  <textarea id="lp" readonly style="min-height:200px;font-size:13px">${esc(p)}</textarea>
-  <label style="display:flex;gap:8px;align-items:center;margin-top:10px"><input type="checkbox" id="js"> Machine-readable answer (JSON)</label>
-  <button class="btn" id="cp" style="width:100%;margin-top:10px">Copy request</button>
-  <a class="btn s" href="https://claude.ai/new" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:8px;text-decoration:none">Open Claude</a>`;
-  d.showModal();
-  $('#cp').onclick=()=>{const t=$('#lp');t.select();t.setSelectionRange(0,99999);try{navigator.clipboard.writeText($('#lp').value)}catch(e){document.execCommand('copy')}toast('Copied')};
-  $('#js').onchange=e=>{D.json=e.target.checked;$('#lp').value=luminaPrompt()};
-}
-
-/* ---- Dashboard + account ---- */
-function renderDash(){
-  const el=$('#dash'),c=window.cloud,u=c&&c.user;
-  $('#acctBtn').textContent=u?(u.email||'?')[0].toUpperCase():'👤';
-  $('#tools').hidden=tab==='disc';
-  if(tab==='disc'){el.innerHTML='';return}
-  const done=books.filter(b=>b.status==='done'),rd=books.filter(b=>b.status==='reading');
-  const pages=done.reduce((s,b)=>s+(b.pages||0),0)+rd.reduce((s,b)=>s+(b.page||0),0);
-  const cur=[...rd].sort((a,b)=>b.upd-a.upd)[0],pct=cur&&cur.pages?Math.min(100,Math.round((cur.page||0)/cur.pages*100)):0,R=34,C=2*Math.PI*R;
-  const Y=new Date().getFullYear(),gd=done.filter(b=>new Date(b.end||b.upd).getFullYear()===Y).length,goalHTML=SET.goal?`<div class="ban"><b>${gd} of ${SET.goal}</b> books toward your ${Y} goal<div class="bar" style="margin-top:6px"><i style="width:${Math.min(100,gd/SET.goal*100)}%"></i></div></div>`:'';
-  const ban=c&&c.on?(u?`☁ Cloud Sync Active — Logged in as ${esc(u.email)}`:`You\u2019re a guest, so your books stay in this browser. <button class="lnk" data-act="acct">Create a free account</button> to sync across phones.`):'';
-  el.innerHTML=`${ban?`<div class="ban">${ban}</div>`:''}<div class="tiles"><div><b>${done.length}</b><small>Books read</small></div><div><b>${pages.toLocaleString()}</b><small>Pages read</small></div><div><b>${streakOf()}</b><small>Day streak</small></div><div><b>${cur?esc(cur.title):'None'}</b><small>Active read</small></div></div>${goalHTML}
-  ${cur&&cur.pages?`<div class="rc"><svg width="84" height="84" viewBox="0 0 84 84" role="img" aria-label="${pct}% read"><circle cx="42" cy="42" r="${R}" fill="none" stroke="var(--line)" stroke-width="8"/><circle cx="42" cy="42" r="${R}" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" transform="rotate(-90 42 42)"/><text x="42" y="47" text-anchor="middle" font-size="16" font-weight="700" fill="var(--ink)" font-family="Georgia,serif">${pct}%</text></svg><div class="meta"><small class="a">Now reading</small><div class="t">${esc(cur.title)}</div><div class="a">Page ${cur.page||0} of ${cur.pages}</div></div></div>`:''}`;
-}
-$('#fq').oninput=e=>{fq=e.target.value.trim().toLowerCase();render()};
-$('#fs').onchange=e=>{fs=e.target.value;render()};
-$('#dash').onclick=e=>{if(e.target.dataset.act==='acct')openAuth()};
-$('#acctBtn').onclick=openAuth;
-function openAuth(){
-  const d=$('#auth'),c=window.cloud,H=t=>`<h2 style="font:700 22px Georgia,serif;margin:0 0 8px">${t}</h2>`;
-  if(!c||!c.on){d.innerHTML=H('Cloud sync')+'<p class="a">Sync is optional. To turn it on, create a free Firebase project, paste its web config into <b>firebase-config.js</b>, and publish again. Until then your shelf saves on this device.</p>';d.showModal();return}
-  if(c.user){d.innerHTML=H('Account')+`<p class="a">Signed in as ${esc(c.user.email)}. Your shelf syncs automatically.</p><button class="btn s" id="so" style="width:100%;margin-top:10px">Sign out</button>`;d.showModal();$('#so').onclick=async()=>{await c.out();d.close();toast('Signed out')};return}
-  d.innerHTML=H('Sign in')+`<button class="btn s" id="gg" style="width:100%">Continue with Google</button><label for="em">Email</label><input type="email" id="em" autocomplete="email"><label for="pw">Password (6+ characters)</label><input type="password" id="pw" autocomplete="current-password"><p id="er" role="alert" class="a" style="color:#C0392B;margin:8px 0 0"></p><div class="two" style="margin-top:10px"><button class="btn" id="si" style="flex:1">Sign in</button><button class="btn s" id="su" style="flex:1">Create account</button></div>`;
-  d.showModal();
-  const run=fn=>async()=>{try{await fn();d.close()}catch(e){$('#er').textContent=(e.code||e.message||'Error').replace('auth/','').replace(/-/g,' ')}};
-  $('#gg').onclick=run(()=>c.google());$('#si').onclick=run(()=>c.signin($('#em').value,$('#pw').value));$('#su').onclick=run(()=>c.signup($('#em').value,$('#pw').value));
-}
-
-/* ---- Lumina AI inside the app ---- */
-const AIJSON=`You are Lumina, an advanced literary architect and recommendation engine: warm, articulate, like an expert independent bookseller.
-RULES: (1) 60/40 ratio: at most ONE major bestseller; at least 60% of picks acclaimed backlist, indie or under-the-radar titles. (2) Hard exclusion: never include a title containing my constraints, and never recommend a book already on my shelf. (3) Zero spoilers. (4) For AUDIOBOOK prefer award-winning narration. (5) Respect my length and release era (RECENT = last 3 years). (6) If inputs are vague, infer defaults. If pacing and mood conflict, prioritize pacing. (7) Only recommend real books you are certain exist.
-Reply with ONLY valid JSON, no markdown fences, exactly this shape:
-{"profile_summary":"2 sentences","recommendations":[{"title":"","author":"","year":0,"genre":"","page_count":0,"best_format":"Print|Ebook|Audiobook","pacing":"FAST|MEDIUM|SLOW","mood_tags":[""],"pitch":"2-3 sentences, spoiler-free","affinity_reason":"tie to my history","tropes":[""],"content_notes":""}],"wildcard":{"title":"","author":"","stretch_reason":"","anchor_reason":""},"book_club":["spoiler-free prompt 1","spoiler-free prompt 2 (for the top pick)"]}
-Give 4 recommendations.`;
-const aiHTML=()=>{
-  if(D.aiBusy)return '<p class="a" style="margin-top:12px">Lumina is reading your shelf\u2026</p>';
-  if(D.aiErr)return `<p role="alert" class="a" style="color:#C0392B;margin-top:12px">${esc(D.aiErr)}</p>`;
-  const a=D.ai;
-  if(!a)return SET.key?'':'<p class="a" style="margin-top:10px">Tip: add your Claude API key in the \u2261 settings and Lumina will answer right here.</p>';
-  const card=(x,i,body)=>`<div class="card"><div class="meta"><div class="t">${esc(x.title)}</div><div class="a">${esc(x.author)}</div>${body}<button class="btn" data-ar="${i}">Add to Want to read</button></div></div>`;
-  const recs=(a.recommendations||[]).map((x,i)=>card(x,i,`<div class="sub">${[x.year,x.genre,x.page_count?x.page_count+' pages':'',x.best_format,x.pacing].filter(Boolean).map(esc).join(' \u00b7 ')}</div><p style="margin:6px 0 0;font-size:14px">${esc(x.pitch)}</p><p class="a" style="margin:4px 0 0"><b>Why it fits you:</b> ${esc(x.affinity_reason)}</p><div class="sub" style="flex-wrap:wrap">${(x.tropes||[]).map(t=>`<span class="chip" style="padding:2px 8px;font-size:12px">${esc(t)}</span>`).join('')}</div>${x.content_notes?`<p class="a" style="margin:4px 0 0;font-size:12px">Content: ${esc(x.content_notes)}</p>`:''}`)).join('');
-  const w=a.wildcard&&a.wildcard.title?`<label>Wildcard</label>${card(a.wildcard,'w',`<p class="a" style="margin:6px 0 0"><b>The stretch:</b> ${esc(a.wildcard.stretch_reason)}</p><p class="a" style="margin:4px 0 0"><b>The anchor:</b> ${esc(a.wildcard.anchor_reason)}</p>`)}`:'';
-  const bc=(a.book_club||[]).length?`<label>Book club prompts</label><div class="ban"><ol style="margin:0;padding-left:18px">${a.book_club.map(q=>`<li style="margin-bottom:6px">${esc(q)}</li>`).join('')}</ol></div>`:'';
-  return `<div class="ban" style="margin-top:14px">${esc(a.profile_summary)}</div><div class="res">${recs}</div>${w}${bc}`;
-};
-async function luminaAI(){
-  if(D.aiBusy)return;
-  D.aiBusy=true;D.aiErr='';D.ai=null;renderDisc();
-  const f=b=>`${b.title}${b.author?' by '+b.author:''}`,loved=books.filter(b=>b.rating>=4||b.fav).map(b=>f(b)+(b.notes?` (my note: ${b.notes.slice(0,140)})`:'')+((b.moods||[]).length?` [${b.moods.join(', ')}]`:''));
-  const msg='MY REQUEST'+luminaPrompt().split('MY REQUEST')[1].replace(/\n\n--json$/,'')+`\n- Loved books with my notes: ${loved.join('; ')||'(none yet)'}\n- Currently reading: ${books.filter(b=>b.status==='reading').map(f).join('; ')||'(nothing)'}\n- Already on my shelf (do not recommend): ${books.map(b=>b.title).join('; ')||'(empty)'}`;
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':SET.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:SET.model||'claude-sonnet-5-5',max_tokens:3500,system:AIJSON,messages:[{role:'user',content:msg}]})});
-    if(r.status===401)throw new Error('Claude rejected your API key. Check it in the \u2261 settings.');
-    if(!r.ok)throw new Error('Claude could not answer right now (error '+r.status+').');
-    const j=await r.json(),t=j.content.filter(c=>c.type==='text').map(c=>c.text).join('').replace(/^```(?:json)?|```$/gm,'').trim();
-    D.ai=JSON.parse(t.slice(t.indexOf('{'),t.lastIndexOf('}')+1));
-  }catch(e){D.aiErr=e instanceof SyntaxError?'Lumina\u2019s answer could not be read. Try again.':(e.message==='Failed to fetch'?'Could not reach Claude. Check your connection.':e.message)}
-  D.aiBusy=false;renderDisc();
-}
-async function addAI(i){
-  const x=i==='w'?D.ai.wildcard:D.ai.recommendations[+i];if(!x)return;
-  if(books.some(b=>b.title.toLowerCase()===String(x.title).toLowerCase())){toast('Already on your shelf');return}
-  addBook({title:x.title,author:x.author||'',pages:x.page_count||0});
-  const b=books[books.length-1],pc=String(x.pacing||'').toLowerCase(),fm=String(x.best_format||'').toLowerCase();
-  b.pacing=['Fast','Medium','Slow'].find(v=>v.toLowerCase()===pc)||'Medium';b.format=['Print','Ebook','Audiobook'].find(v=>v.toLowerCase()===fm)||'Print';
-  b.moods=Object.keys(MOODS).filter(m=>(x.mood_tags||[]).some(t=>String(t).toLowerCase()===m.toLowerCase()));save();render();
-  try{const j=await (await fetch(`https://openlibrary.org/search.json?limit=1&fields=key,cover_i,number_of_pages_median&q=${encodeURIComponent(x.title+' '+(x.author||''))}`)).json(),d=(j.docs||[])[0];
-    if(d&&d.cover_i){b.cover=`https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg`;b.pages=b.pages||d.number_of_pages_median||0;b.ol=b.ol||d.key;save();render()}}catch(e){}
-}
-
-render();
-if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-</script>
-<script type="module">
-const cfg=window.FIREBASE_CONFIG;
-window.cloud={on:false};
-if(cfg&&cfg.apiKey&&!cfg.apiKey.startsWith('YOUR_')){
-  const V='https://www.gstatic.com/firebasejs/10.14.1/';
-  try{
-    const [{initializeApp},A,F]=await Promise.all([import(V+'firebase-app.js'),import(V+'firebase-auth.js'),import(V+'firebase-firestore.js')]);
-    const app=initializeApp(cfg),auth=A.getAuth(app),db=F.getFirestore(app);
-    const c=window.cloud={on:true,user:null,push:null,
-      google:()=>A.signInWithPopup(auth,new A.GoogleAuthProvider()),
-      signin:(e,p)=>A.signInWithEmailAndPassword(auth,e,p),
-      signup:(e,p)=>A.createUserWithEmailAndPassword(auth,e,p),
-      out:()=>A.signOut(auth)};
-    let unsub=null;
-    A.onAuthStateChanged(auth,u=>{
-      c.user=u;if(unsub){unsub();unsub=null}
-      if(u){
-        const ref=F.doc(db,'users',u.uid,'data','shelf');
-        c.push=(books,upd)=>F.setDoc(ref,{books:JSON.stringify(books),upd});
-        let first=true;
-        unsub=F.onSnapshot(ref,s=>{const d=s.exists()?s.data():null;window.onCloud(d?{books:JSON.parse(d.books),upd:d.upd}:null,first);first=false},()=>window.onCloud(undefined));
-      }else c.push=null;
-      window.onAuth();
-    });
-  }catch(e){window.cloud={on:false}}
-}
-window.dispatchEvent(new Event('cloud-ready'));
-</script>
-</body>
-</html>
+ $('#tabs').innerHTML=TABS.map(([k,n])=>`<button data-t="${k}" class="${k==tab?'on':''}">${n}</button>`).join('');
+ const old=!S.lb||Date.now()-S.lb>6048e5;$('#bn').hidden=!(S.books.length&&old&&tab!='backup');
+ $('#bn').innerHTML=`${S.lb?'Last backup '+ago(S.lb):'No backup yet'}. <button data-a="bk">Back up now</button>`;
+ const isL=['reading','want','done','fav'].includes(tab);$('#q').hidden=!isL;const m=$('#main');
+ if(tab=='stats')m.innerHTML=stats();else if(tab=='backup'){m.innerHTML=backup();snaps()}
+ else{let L=S.books.filter(b=>tab=='fav'?b.fav:b.st==tab);if(q)L=L.filter(b=>(b.t+' '+b.a).toLowerCase().includes(q));L.sort((a,b)=>b.u-a.u);
+  m.innerHTML=L.map(card).join('')||'<p class="empty">Nothing here yet. Tap + to add a book.</p>'}}
+function pages(b,n){if(b.p)n=Math.min(n,b.p-b.cur);if(n<=0)return;b.cur+=n;const d=day(),l=b.log.find(x=>x[0]==d);l?l[1]+=n:b.log.push([d,n]);b.u=Date.now();if(b.p&&b.cur>=b.p)finish(b);else save()}
+function finish(b){if(b.p&&b.cur<b.p)return pages(b,b.p-b.cur);b.st='done';b.fin=day();b.u=Date.now();save();edit(b)}
+function edit(b){const n=!b;b=b||{id:uid(),t:'',a:'',p:0,cur:0,st:'want',r:0,n:'',log:[],fav:false,u:0};
+ const o=(v,l,c)=>`<option value="${v}" ${v==c?'selected':''}>${l}</option>`;
+ $('#dlg').innerHTML=`<h3>${n?'Add book':'Edit book'}</h3><input id="ft" placeholder="Title" value="${esc(b.t)}"><input id="fa" placeholder="Author" value="${esc(b.a)}"><div class="g"><input id="fp" type="number" inputmode="numeric" min="0" placeholder="Total pages" value="${b.p||''}"><input id="fc" type="number" inputmode="numeric" min="0" placeholder="Current page" value="${b.cur||''}"></div><div class="g"><select id="fs">${o('want','Want to read',b.st)+o('reading','Reading',b.st)+o('done','Finished',b.st)}</select><select id="fr">${[0,1,2,3,4,5].map(i=>o(i,i?'★'.repeat(i):'No rating',b.r)).join('')}</select></div><textarea id="fn" rows="3" placeholder="Notes">${esc(b.n)}</textarea><div class="row"><button id="no">Cancel</button>${n?'':'<button id="rm">Delete</button>'}<button class="pri" id="ok">Save</button></div>`;
+ $('#ok').onclick=()=>{const t=$('#ft').value.trim();if(!t)return $('#ft').focus();
+  Object.assign(b,{t,a:$('#fa').value.trim(),p:+$('#fp').value||0,cur:+$('#fc').value||0,st:$('#fs').value,r:+$('#fr').value,n:$('#fn').value,u:Date.now()});
+  if(b.st=='done'){b.fin=b.fin||day();if(b.p)b.cur=b.p}if(n)S.books.push(b);$('#dlg').close();save()};
+ $('#no').onclick=()=>$('#dlg').close();
+ if(!n)$('#rm').onclick=()=>{if(confirm('Delete this book?')){S.books=S.books.filter(x=>x!==b);$('#dlg').close();save()}};
+ $('#dlg').showModal()}
+function stats(){const y=day().slice(0,4),B=S.books,yr=B.filter(b=>b.st=='done'&&(b.fin||'').startsWith(y)).length,L=B.flatMap(b=>b.log),tot=L.reduce((s,x)=>s+x[1],0),by={};L.forEach(([d,n])=>by[d]=(by[d]||0)+n);
+ let s=0,d=new Date();if(!by[day(d)])d.setDate(d.getDate()-1);while(by[day(d)]){s++;d.setDate(d.getDate()-1)}
+ const w=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return[day(d).slice(8),by[day(d)]||0]}),mx=Math.max(1,...w.map(x=>x[1]));
+ return `<div class="stats"><div><b>${yr} / ${S.goal}</b>books finished in ${y}</div><div><b>${s}</b>day streak</div><div><b>${tot}</b>pages logged</div><div><b>${B.length}</b>books on shelf</div></div><div class="chart">${w.map(([l,n])=>`<div title="${n} pages"><i style="height:${n/mx*100}%"></i><small>${l}</small></div>`).join('')}</div><button data-a="goal">Set yearly goal</button>`}
+const backup=()=>`<div class="panel"><h3>Backup</h3><p>Last backup: ${S.lb?new Date(S.lb).toLocaleString():'never'}. ${S.ch} changes since.</p><button class="pri" data-a="bk">Back up now (save to Files or iCloud)</button><button data-a="imp">Restore from a backup file</button><h3>Automatic snapshots</h3><p>One snapshot per day is kept on this phone for 8 days.</p><div id="snaps" class="panel"></div><p id="ps"></p></div>`;
+async function snaps(){const ks=(await dbKeys()).filter(k=>k.startsWith('snap-')).sort().reverse(),e=$('#snaps');if(e)e.innerHTML=ks.map(k=>`<button data-a="snap" data-k="${k}">Restore ${k.slice(5)}</button>`).join('')||'<p>None yet.</p>';
+ navigator.storage?.persisted?.().then(p=>{const e=$('#ps');if(e)e.textContent=p?'Protected storage: on.':'Protected storage: not granted. Install to Home Screen and keep backing up.'})}
+function dl(f){const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),9e3)}
+async function exportNow(){const f=new File([JSON.stringify(S,null,1)],`myshelf-backup-${day()}.json`,{type:'application/json'});
+ try{if(navigator.canShare?.({files:[f]}))await navigator.share({files:[f],title:f.name});else dl(f)}catch(e){if(e.name=='AbortError')return;dl(f)}
+ S.lb=Date.now();S.ch=0;save(true)}
+async function restoreSnap(k){if(!confirm('Replace your shelf with snapshot '+k.slice(5)+'? Your current shelf is saved first.'))return;const s=await dbGet(k);if(!s)return;await dbSet('snap-'+day()+'-pre',S);S=s;save(true)}
+$('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.books))throw 0;
+ const bs=j.books.filter(b=>b&&b.t).map(b=>({id:String(b.id||uid()),t:String(b.t),a:String(b.a||''),p:+b.p||0,cur:+b.cur||0,st:['want','reading','done'].includes(b.st)?b.st:'want',r:Math.min(5,+b.r||0),n:String(b.n||''),fav:!!b.fav,fin:b.fin?String(b.fin):'',log:Array.isArray(b.log)?b.log.filter(x=>Array.isArray(x)&&x.length==2):[],u:+b.u||0}));
+ await dbSet('snap-'+day()+'-pre',S);
+ if(confirm(`Found ${bs.length} books.\nOK = merge with your current shelf\nCancel = replace your shelf`)){const m=new Map(S.books.map(b=>[b.id,b]));bs.forEach(b=>{const o=m.get(b.id);if(!o||b.u>o.u)m.set(b.id,b)});S.books=[...m.values()]}else S.books=bs;
+ if(j.goal>0)S.goal=j.goal;save(true)}catch{alert('That file is not a valid My Shelf backup.')}};
+document.onclick=e=>{const t=e.target.closest('[data-t]');if(t){tab=t.dataset.t;render();return}
+ const a=e.target.closest('[data-a]');if(!a)return;const c=a.closest('.card'),b=c&&S.books.find(x=>x.id==c.dataset.id),k=a.dataset.a;
+ if(b&&k=='fav'){b.fav=!b.fav;b.u=Date.now();save()}else if(b&&k=='add')pages(b,+a.dataset.n);
+ else if(b&&k=='log'){const n=parseInt(prompt('Pages read now?'),10);if(n>0)pages(b,n)}
+ else if(b&&k=='start'){b.st='reading';b.u=Date.now();save()}else if(b&&k=='done')finish(b);else if(b&&k=='edit')edit(b);
+ else if(k=='bk')exportNow();else if(k=='imp')$('#file').click();else if(k=='snap')restoreSnap(a.dataset.k);
+ else if(k=='goal'){const g=parseInt(prompt('Books per year?',S.goal),10);if(g>0){S.goal=g;save()}}};
+$('#fab').onclick=()=>edit();$('#q').oninput=e=>{q=e.target.value.toLowerCase();render()};
+addEventListener('pagehide',()=>persist());document.addEventListener('visibilitychange',()=>document.hidden&&persist());
+(async()=>{await load();try{const k='snap-'+day();if(S.books.length&&!(await dbGet(k)))await dbSet(k,S);
+ for(const x of (await dbKeys()).filter(k=>k.startsWith('snap-')).sort().slice(0,-8))await tx('readwrite',o=>o.delete(x))}catch{}
+ navigator.storage?.persist?.();render();if(!navigator.standalone&&!matchMedia('(display-mode:standalone)').matches)$('#inst').hidden=false;
+ navigator.serviceWorker?.register('sw.js')})();
+</script></body></html>
