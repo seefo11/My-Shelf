@@ -1,33 +1,40 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f766e"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="My Shelf"><title>My Shelf</title>
 <style>
-:root{--bg:#f1f4f2;--card:#fff;--ink:#12302b;--mut:#5d7570;--acc:#0f766e;--gold:#d99a1e;--line:#d8e2de;color-scheme:light}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1514;--card:#16201f;--ink:#e6f0ed;--mut:#8da8a2;--acc:#2dd4bf;--gold:#f0b429;--line:#26363a;color-scheme:dark}}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,sans-serif;padding:env(safe-area-inset-top) 0 calc(90px + env(safe-area-inset-bottom))}
-header{display:flex;justify-content:space-between;align-items:baseline;padding:14px 16px 4px}h1{font:700 28px ui-serif,Georgia,serif;margin:0}#st{font-size:12px;color:var(--mut)}
-#tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;position:sticky;top:env(safe-area-inset-top);background:var(--bg);z-index:5}
-#tabs button{flex:none;border:0;background:none;color:var(--mut);font:600 15px inherit;padding:8px 12px;border-bottom:3px solid transparent}#tabs .on{color:var(--ink);border-color:var(--acc)}
-#bn,#inst{margin:8px 16px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--gold) 22%,var(--card));font-size:14px}
-[hidden]{display:none!important}#q,#so{display:block;width:calc(100% - 32px);margin:8px 16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:16px}
-#main{padding:0 16px;max-width:640px;margin:auto}
-.card{background:var(--card);border-left:6px solid var(--acc);border-radius:6px 12px 12px 6px;padding:12px 14px;margin:10px 0}
-.top{display:flex;justify-content:space-between;gap:8px}.top b{font:700 18px ui-serif,Georgia,serif;display:block}small{color:var(--mut)}
-.top>button{border:0;background:none;font-size:24px;color:var(--gold);padding:0 4px}
-.cv{width:48px;height:72px;object-fit:cover;border-radius:3px;flex:none}.sgb{display:block;width:100%;text-align:left;margin:3px 0}.bar{height:8px;background:var(--line);border-radius:4px;margin:10px 0 6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}
-.act{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}.act span{flex:1;font-size:13px;color:var(--mut);min-width:90px}
-button{font:600 14px inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px}button.pri{background:var(--acc);color:#fff;border:0}
-.empty{text-align:center;color:var(--mut);padding:40px 0}
-#fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;border:0;background:var(--acc);color:#fff;font-size:32px;box-shadow:0 4px 14px #0004}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.stats div{background:var(--card);border-radius:12px;padding:12px;color:var(--mut);font-size:13px}.stats b{display:block;font:700 28px ui-serif,Georgia,serif;color:var(--ink)}
-.chart{display:flex;gap:8px;height:110px;align-items:flex-end;background:var(--card);border-radius:12px;padding:12px;margin-bottom:12px}.chart div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.chart i{width:100%;background:var(--acc);border-radius:4px 4px 0 0;min-height:2px}
-.panel{display:grid;gap:10px;margin-top:10px}.panel h3{margin:10px 0 0}.panel p{margin:0;color:var(--mut);font-size:14px}
-dialog{width:min(92vw,440px);border:0;border-radius:16px;background:var(--card);color:var(--ink);padding:16px}dialog::backdrop{background:#0008}
-dialog input,dialog select,dialog textarea{width:100%;margin:5px 0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:16px}.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row{display:flex;gap:8px;margin-top:8px}.row button{flex:1}
+:root{--bg:#f3f4f7;--card:#fff;--ink:#18202e;--mut:#667085;--acc:#2f4b8f;--gold:#e0a030;--line:#e1e5ee;color-scheme:light}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1117;--card:#161b24;--ink:#e8ecf3;--mut:#8b97a8;--acc:#7da2ff;--gold:#f2b84b;--line:#252d3a;color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0}[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,sans-serif;padding:env(safe-area-inset-top) 0 calc(150px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:8px;padding:18px 18px 6px;max-width:640px;margin:auto}h1{font:700 34px/1.1 ui-serif,Georgia,serif;margin:0;flex:1;letter-spacing:-.5px}#st{font-size:12px;color:var(--mut)}
+button,input,select,textarea{font-family:system-ui,-apple-system,sans-serif}
+.ic{border:0;background:none;font-size:26px;color:var(--gold);padding:4px 8px}
+#tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:6}
+#tabs button{border:0;background:none;color:var(--mut);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 0;border-radius:0}#tabs em{font:700 19px ui-serif,Georgia,serif;font-style:normal;line-height:1.3}#tabs .on{color:var(--acc)}
+#bn,#inst{margin:8px auto;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--gold) 20%,var(--card));font-size:14px;max-width:604px;width:calc(100% - 36px)}
+#q,#so{display:block;width:calc(100% - 36px);max-width:604px;margin:8px auto;padding:11px 14px;border:0;border-radius:12px;background:var(--card);color:var(--ink);font-size:16px}
+#main{padding:0 18px;max-width:640px;margin:auto}
+.card{display:flex;gap:14px;background:var(--card);border-radius:14px;padding:12px;margin:12px 0;box-shadow:0 1px 0 var(--line)}
+.cv{position:relative;width:56px;height:84px;border-radius:3px 7px 7px 3px;background:hsl(var(--h) 40% 36%);color:#fff;display:grid;place-items:center;font:700 26px ui-serif,Georgia,serif;flex:none;overflow:hidden;box-shadow:inset 5px 0 0 #0003}.cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.bd{flex:1;min-width:0}.top{display:flex;gap:6px}.ti{flex:1;min-width:0}.ti b{font:700 18px/1.2 ui-serif,Georgia,serif;display:block}small{color:var(--mut)}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:10px 0 6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold);border-radius:3px}
+.act{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}.act span{font-size:13px;color:var(--mut)}
+button{font-size:14px;font-weight:600;border:0;background:color-mix(in srgb,var(--acc) 10%,var(--card));color:var(--acc);border-radius:10px;padding:9px 13px}button.pri{background:var(--acc);color:var(--card)}
+.empty{text-align:center;color:var(--mut);padding:56px 0}
+.goal{background:var(--card);border-radius:14px;padding:12px 14px;margin:10px 0 0;font-size:14px;color:var(--mut)}.goal b{font:700 22px ui-serif,Georgia,serif;color:var(--ink)}.goal .bar{margin:8px 0 0}
+#fab{position:fixed;right:18px;bottom:calc(78px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;padding:0;background:var(--acc);color:var(--card);font-size:30px;box-shadow:0 6px 18px #0004;z-index:7}
+#toast{position:fixed;left:18px;right:18px;bottom:calc(140px + env(safe-area-inset-bottom));max-width:604px;margin:auto;background:var(--ink);color:var(--bg);border-radius:12px;padding:8px 8px 8px 14px;display:flex;justify-content:space-between;align-items:center;z-index:9}#toast button{background:none;color:var(--gold)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.stats div{background:var(--card);border-radius:14px;padding:14px;color:var(--mut);font-size:13px}.stats b{display:block;font:700 30px ui-serif,Georgia,serif;color:var(--ink)}
+.chart{display:flex;gap:8px;height:120px;align-items:flex-end;background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px}.chart div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.chart i{width:100%;background:var(--gold);border-radius:4px 4px 0 0;min-height:2px}
+.panel{display:grid;gap:10px;margin-top:10px}.panel h3{margin:14px 0 0;font:700 20px ui-serif,Georgia,serif}.panel p{margin:0;color:var(--mut);font-size:14px}
+dialog{width:100%;max-width:520px;margin:auto auto 0;border:0;border-radius:20px 20px 0 0;background:var(--card);color:var(--ink);padding:18px 18px calc(18px + env(safe-area-inset-bottom))}dialog::backdrop{background:#0008}dialog[open]{animation:up .25s ease}@keyframes up{from{transform:translateY(40px);opacity:0}}
+dialog h3{margin:0 0 6px;font:700 22px ui-serif,Georgia,serif}dialog input,dialog select,dialog textarea{width:100%;margin:5px 0;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:16px}
+.sgb{display:block;width:100%;text-align:left;margin:3px 0}.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row{display:flex;gap:8px;margin-top:10px}.row button{flex:1;padding:12px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body>
-<header><h1>My Shelf</h1><span id="st"></span></header>
+<header><h1 id="h1">My Shelf</h1><span id="st"></span><button class="ic" id="fvb" aria-label="Favorites only">♡</button></header>
 <nav id="tabs"></nav><div id="bn" hidden></div><div id="inst" hidden>Install it: tap Share, then Add to Home Screen. Safari can erase data of unused browser tabs after about 7 days; installed apps are exempt.</div>
 <input id="q" type="search" placeholder="Search title or author"><select id="so"><option value="r">Sort: recent</option><option value="t">Sort: title</option><option value="a">Sort: author</option><option value="s">Sort: rating</option></select><main id="main"></main>
-<button id="fab" aria-label="Add book">+</button><dialog id="dlg"></dialog><input id="file" type="file" accept=".json,application/json" hidden>
+<div id="toast" hidden></div><button id="fab" aria-label="Add book">+</button><dialog id="dlg"></dialog><input id="file" type="file" accept=".json,application/json" hidden>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const day=(d=new Date())=>new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -35,25 +42,28 @@ const ago=t=>{const d=Math.floor((Date.now()-t)/864e5);return d?d+'d ago':'today
 let dbp;const db=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('myshelf',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
 const tx=async(m,f)=>{const d=await db();return new Promise((res,rej)=>{const t=d.transaction('kv',m),q=f(t.objectStore('kv'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})};
 const dbGet=k=>tx('readonly',o=>o.get(k)),dbSet=(k,v)=>tx('readwrite',o=>o.put(v,k)),dbKeys=()=>tx('readonly',o=>o.getAllKeys());
-let S,tab='reading',q='',tm,so='r';const SORT={r:(a,b)=>b.u-a.u,t:(a,b)=>a.t.localeCompare(b.t),a:(a,b)=>a.a.localeCompare(b.a),s:(a,b)=>b.r-a.r};
-const TABS=[['reading','Reading'],['want','Want to read'],['done','Finished'],['fav','♥ Favorites'],['stats','Stats'],['backup','Backup']];
+let S,tab='reading',q='',tm,so='r',fv=false;const SORT={r:(a,b)=>b.u-a.u,t:(a,b)=>a.t.localeCompare(b.t),a:(a,b)=>a.a.localeCompare(b.a),s:(a,b)=>b.r-a.r};
+const TABS=[['reading','Reading'],['want','Want'],['done','Finished'],['stats','Stats'],['backup','Backup']];
 async function load(){let a,b;try{a=await dbGet('main')}catch{}try{b=JSON.parse(localStorage.getItem('ms'))}catch{}
  S=[a,b].filter(x=>x&&Array.isArray(x.books)).sort((x,y)=>y.u-x.u)[0]||{books:[],goal:12,lb:0,ch:0,u:0}}
 function save(now){S.u=Date.now();S.ch++;clearTimeout(tm);if(now)persist();else tm=setTimeout(persist,400);render()}
 async function persist(){clearTimeout(tm);try{localStorage.setItem('ms',JSON.stringify(S))}catch{}
  try{await dbSet('main',S);note('Saved ✓')}catch{note('⚠ Save failed: back up now')}}
 const pct=b=>b.p?Math.min(100,Math.round(b.cur/b.p*100)):0;
-const card=b=>`<article class="card" data-id="${b.id}"><div class="top">${b.cv?`<img class="cv" loading="lazy" alt="" src="${esc(b.cv)}" onerror="this.remove()">`:''}<div data-a="edit" style="flex:1"><b>${esc(b.t)}</b><small>${esc(b.a)}${b.r?' '+'★'.repeat(b.r):''}</small></div><button data-a="fav" aria-label="Favorite">${b.fav?'♥':'♡'}</button></div>`+
-(b.st=='reading'?`<div class="bar"><i style="width:${pct(b)}%"></i></div><div class="act"><span>Page ${b.cur}${b.p?' of '+b.p+' ('+pct(b)+'%)':''}</span><button data-a="add" data-n="10">+10</button><button data-a="add" data-n="25">+25</button><button data-a="log">Log</button><button data-a="done">Finish</button></div>`:
-b.st=='want'?`<div class="act"><button class="pri" data-a="start">Start reading</button></div>`:`<div class="act"><span>Finished ${esc(b.fin||'')}</span></div>`)+`</article>`;
+const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
+const cvr=b=>`<div class="cv" style="--h:${hue(b.t)}"><span>${esc((b.t[0]||'?').toUpperCase())}</span>${b.cv?`<img loading="lazy" alt="" src="${esc(b.cv)}" onerror="this.remove()">`:''}</div>`;
+const card=b=>`<article class="card" data-id="${b.id}">${cvr(b)}<div class="bd"><div class="top"><div data-a="edit" class="ti"><b>${esc(b.t)}</b><small>${esc(b.a)}${b.r?' · '+'★'.repeat(b.r):''}</small></div><button class="ic" data-a="fav" aria-label="Favorite">${b.fav?'♥':'♡'}</button></div>`+
+(b.st=='reading'?`<div class="bar"><i style="width:${pct(b)}%"></i></div><div class="act"><span>${b.cur}${b.p?' / '+b.p+' pages · '+pct(b)+'%':' pages'}</span></div><div class="act"><button data-a="add" data-n="10">+10</button><button data-a="add" data-n="25">+25</button><button data-a="log">Log</button><button class="pri" data-a="done">Finish</button></div>`:
+b.st=='want'?`<div class="act"><button class="pri" data-a="start">Start reading</button></div>`:`<small>Finished ${esc(b.fin||'')}</small>`)+`</div></article>`;
+const goal=()=>{const td=day(),pt=S.books.flatMap(b=>b.log).filter(x=>x[0]==td).reduce((s,x)=>s+x[1],0),dg=S.dg||20;return `<div class="goal" data-a="dgoal"><b>${pt}</b> of ${dg} pages today<div class="bar"><i style="width:${Math.min(100,pt/dg*100)}%"></i></div></div>`};
 function render(){
- $('#tabs').innerHTML=TABS.map(([k,n])=>`<button data-t="${k}" class="${k==tab?'on':''}">${n}</button>`).join('');
+ $('#tabs').innerHTML=TABS.map(([k,n])=>`<button data-t="${k}" class="${k==tab?'on':''}"><em>${k=='stats'?'◔':k=='backup'?'⇪':S.books.filter(b=>b.st==k).length}</em>${n}</button>`).join('');
  const old=!S.lb||Date.now()-S.lb>6048e5||S.ch>=25;$('#bn').hidden=!(S.books.length&&old&&tab!='backup');
  $('#bn').innerHTML=`${S.lb?'Last backup '+ago(S.lb):'No backup yet'}. <button data-a="bk">Back up now</button>`;
- const isL=['reading','want','done','fav'].includes(tab);$('#q').hidden=$('#so').hidden=!isL;const m=$('#main');
+ const isL=['reading','want','done','fav'].includes(tab);$('#q').hidden=$('#so').hidden=$('#fvb').hidden=!isL;$('#fvb').textContent=fv?'♥':'♡';$('#h1').textContent=TABS.find(t=>t[0]==tab)[1];const m=$('#main');
  if(tab=='stats')m.innerHTML=stats();else if(tab=='backup'){m.innerHTML=backup();snaps()}
- else{let L=S.books.filter(b=>tab=='fav'?b.fav:b.st==tab);if(q)L=L.filter(b=>(b.t+' '+b.a).toLowerCase().includes(q));L.sort(SORT[so]);
-  m.innerHTML=L.map(card).join('')||'<p class="empty">Nothing here yet. Tap + to add a book.</p>'}}
+ else{let L=S.books.filter(b=>b.st==tab&&(!fv||b.fav));if(q)L=L.filter(b=>(b.t+' '+b.a).toLowerCase().includes(q));L.sort(SORT[so]);
+  m.innerHTML=(tab=='reading'?goal():'')+(L.map(card).join('')||`<p class="empty">${fv?'No favorites here yet.':'Nothing here yet. Tap + to add a book.'}</p>`)}}
 function pages(b,n){if(b.p)n=Math.min(n,b.p-b.cur);if(n<=0)return;b.cur+=n;const d=day(),l=b.log.find(x=>x[0]==d);l?l[1]+=n:b.log.push([d,n]);b.u=Date.now();if(b.p&&b.cur>=b.p)finish(b);else save()}
 function finish(b){if(b.p&&b.cur<b.p)return pages(b,b.p-b.cur);b.st='done';b.fin=day();b.u=Date.now();save();edit(b)}
 function edit(b){const n=!b;b=b||{id:uid(),t:'',a:'',p:0,cur:0,st:'want',r:0,n:'',log:[],fav:false,u:0};
@@ -64,7 +74,7 @@ function edit(b){const n=!b;b=b||{id:uid(),t:'',a:'',p:0,cur:0,st:'want',r:0,n:'
   Object.assign(b,{t,a:$('#fa').value.trim(),p:+$('#fp').value||0,cur:+$('#fc').value||0,st:$('#fs').value,r:+$('#fr').value,n:$('#fn').value,u:Date.now()});
   if(b.st=='done'){b.fin=b.fin||day();if(b.p)b.cur=b.p}if(n)S.books.push(b);$('#dlg').close();save()};
  $('#no').onclick=()=>$('#dlg').close();
- if(!n)$('#rm').onclick=()=>{if(confirm('Delete this book?')){S.books=S.books.filter(x=>x!==b);(S.del=S.del||{})[b.id]=Date.now();$('#dlg').close();save()}};
+ if(!n)$('#rm').onclick=()=>{S.books=S.books.filter(x=>x!==b);(S.del=S.del||{})[b.id]=Date.now();$('#dlg').close();save();toast('Book deleted',()=>{S.books.push(b);delete S.del[b.id];b.u=Date.now();save()})};
  $('#dlg').showModal()}
 function stats(){const y=day().slice(0,4),B=S.books,yr=B.filter(b=>b.st=='done'&&(b.fin||'').startsWith(y)).length,L=B.flatMap(b=>b.log),tot=L.reduce((s,x)=>s+x[1],0),by={};L.forEach(([d,n])=>by[d]=(by[d]||0)+n);
  const rs=B.filter(b=>b.r),ar=rs.length?(rs.reduce((s,b)=>s+b.r,0)/rs.length).toFixed(1):'–';let s=0,d=new Date();if(!by[day(d)])d.setDate(d.getDate()-1);while(by[day(d)]){s++;d.setDate(d.getDate()-1)}
@@ -83,14 +93,15 @@ $('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)
  await dbSet('snap-'+day()+'-pre',S);
  if(confirm(`Found ${bs.length} books.\nOK = merge with your current shelf\nCancel = replace your shelf`)){const m=new Map(S.books.map(b=>[b.id,b]));bs.forEach(b=>{if((S.del||{})[b.id]>b.u)return;const o=m.get(b.id);if(!o||b.u>o.u)m.set(b.id,b)});S.books=[...m.values()]}else S.books=bs;
  if(j.goal>0)S.goal=j.goal;save(true)}catch{alert('That file is not a valid My Shelf backup.')}};
+let tt;function toast(m,fn){const t=$('#toast');t.innerHTML=esc(m)+(fn?' <button>Undo</button>':'');t.hidden=false;if(fn)t.querySelector('button').onclick=()=>{fn();t.hidden=true};clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,6000)}
 document.onclick=e=>{const t=e.target.closest('[data-t]');if(t){tab=t.dataset.t;render();return}
  const a=e.target.closest('[data-a]');if(!a)return;const c=a.closest('.card'),b=c&&S.books.find(x=>x.id==c.dataset.id),k=a.dataset.a;
  if(b&&k=='fav'){b.fav=!b.fav;b.u=Date.now();save()}else if(b&&k=='add')pages(b,+a.dataset.n);
  else if(b&&k=='log'){const v=prompt('Pages read now? Or type p120 for the page you are on.','');if(v==null)return;const m=/^p\s*(\d+)$/i.exec(v.trim()),n=m?+m[1]-b.cur:parseInt(v,10);if(n>0)pages(b,n)}
  else if(b&&k=='start'){b.st='reading';b.u=Date.now();save()}else if(b&&k=='done')finish(b);else if(b&&k=='edit')edit(b);
  else if(k=='bk')exportNow();else if(k=='imp')$('#file').click();else if(k=='snap')restoreSnap(a.dataset.k);
- else if(k=='goal'){const g=parseInt(prompt('Books per year?',S.goal),10);if(g>0){S.goal=g;save()}}};
-$('#so').onchange=e=>{so=e.target.value;render()};$('#fab').onclick=()=>edit();$('#q').oninput=e=>{q=e.target.value.toLowerCase();render()};
+ else if(k=='dgoal'){const g=parseInt(prompt('Pages per day?',S.dg||20),10);if(g>0){S.dg=g;save()}}else if(k=='goal'){const g=parseInt(prompt('Books per year?',S.goal),10);if(g>0){S.goal=g;save()}}};
+$('#so').onchange=e=>{so=e.target.value;render()};$('#fvb').onclick=()=>{fv=!fv;render()};$('#fab').onclick=()=>edit();$('#q').oninput=e=>{q=e.target.value.toLowerCase();render()};
 addEventListener('pagehide',()=>persist());document.addEventListener('visibilitychange',()=>document.hidden&&persist());
 (async()=>{await load();try{const k='snap-'+day();if(S.books.length&&!(await dbGet(k)))await dbSet(k,S);
  for(const x of (await dbKeys()).filter(k=>k.startsWith('snap-')).sort().slice(0,-8))await tx('readwrite',o=>o.delete(x))}catch{}
