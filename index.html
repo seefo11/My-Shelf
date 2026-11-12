@@ -8,12 +8,12 @@ header{display:flex;justify-content:space-between;align-items:baseline;padding:1
 #tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;position:sticky;top:env(safe-area-inset-top);background:var(--bg);z-index:5}
 #tabs button{flex:none;border:0;background:none;color:var(--mut);font:600 15px inherit;padding:8px 12px;border-bottom:3px solid transparent}#tabs .on{color:var(--ink);border-color:var(--acc)}
 #bn,#inst{margin:8px 16px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--gold) 22%,var(--card));font-size:14px}
-#q{display:block;width:calc(100% - 32px);margin:8px 16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:16px}
+[hidden]{display:none!important}#q,#so{display:block;width:calc(100% - 32px);margin:8px 16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:16px}
 #main{padding:0 16px;max-width:640px;margin:auto}
 .card{background:var(--card);border-left:6px solid var(--acc);border-radius:6px 12px 12px 6px;padding:12px 14px;margin:10px 0}
 .top{display:flex;justify-content:space-between;gap:8px}.top b{font:700 18px ui-serif,Georgia,serif;display:block}small{color:var(--mut)}
 .top>button{border:0;background:none;font-size:24px;color:var(--gold);padding:0 4px}
-.bar{height:8px;background:var(--line);border-radius:4px;margin:10px 0 6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}
+.cv{width:48px;height:72px;object-fit:cover;border-radius:3px;flex:none}.sgb{display:block;width:100%;text-align:left;margin:3px 0}.bar{height:8px;background:var(--line);border-radius:4px;margin:10px 0 6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}
 .act{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}.act span{flex:1;font-size:13px;color:var(--mut);min-width:90px}
 button{font:600 14px inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 12px}button.pri{background:var(--acc);color:#fff;border:0}
 .empty{text-align:center;color:var(--mut);padding:40px 0}
@@ -26,7 +26,7 @@ dialog input,dialog select,dialog textarea{width:100%;margin:5px 0;padding:10px;
 </style></head><body>
 <header><h1>My Shelf</h1><span id="st"></span></header>
 <nav id="tabs"></nav><div id="bn" hidden></div><div id="inst" hidden>Install it: tap Share, then Add to Home Screen. Safari can erase data of unused browser tabs after about 7 days; installed apps are exempt.</div>
-<input id="q" type="search" placeholder="Search title or author"><main id="main"></main>
+<input id="q" type="search" placeholder="Search title or author"><select id="so"><option value="r">Sort: recent</option><option value="t">Sort: title</option><option value="a">Sort: author</option><option value="s">Sort: rating</option></select><main id="main"></main>
 <button id="fab" aria-label="Add book">+</button><dialog id="dlg"></dialog><input id="file" type="file" accept=".json,application/json" hidden>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -35,7 +35,7 @@ const ago=t=>{const d=Math.floor((Date.now()-t)/864e5);return d?d+'d ago':'today
 let dbp;const db=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('myshelf',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
 const tx=async(m,f)=>{const d=await db();return new Promise((res,rej)=>{const t=d.transaction('kv',m),q=f(t.objectStore('kv'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})};
 const dbGet=k=>tx('readonly',o=>o.get(k)),dbSet=(k,v)=>tx('readwrite',o=>o.put(v,k)),dbKeys=()=>tx('readonly',o=>o.getAllKeys());
-let S,tab='reading',q='',tm;
+let S,tab='reading',q='',tm,so='r';const SORT={r:(a,b)=>b.u-a.u,t:(a,b)=>a.t.localeCompare(b.t),a:(a,b)=>a.a.localeCompare(b.a),s:(a,b)=>b.r-a.r};
 const TABS=[['reading','Reading'],['want','Want to read'],['done','Finished'],['fav','♥ Favorites'],['stats','Stats'],['backup','Backup']];
 async function load(){let a,b;try{a=await dbGet('main')}catch{}try{b=JSON.parse(localStorage.getItem('ms'))}catch{}
  S=[a,b].filter(x=>x&&Array.isArray(x.books)).sort((x,y)=>y.u-x.u)[0]||{books:[],goal:12,lb:0,ch:0,u:0}}
@@ -43,32 +43,33 @@ function save(now){S.u=Date.now();S.ch++;clearTimeout(tm);if(now)persist();else 
 async function persist(){clearTimeout(tm);try{localStorage.setItem('ms',JSON.stringify(S))}catch{}
  try{await dbSet('main',S);note('Saved ✓')}catch{note('⚠ Save failed: back up now')}}
 const pct=b=>b.p?Math.min(100,Math.round(b.cur/b.p*100)):0;
-const card=b=>`<article class="card" data-id="${b.id}"><div class="top"><div data-a="edit"><b>${esc(b.t)}</b><small>${esc(b.a)}${b.r?' '+'★'.repeat(b.r):''}</small></div><button data-a="fav" aria-label="Favorite">${b.fav?'♥':'♡'}</button></div>`+
+const card=b=>`<article class="card" data-id="${b.id}"><div class="top">${b.cv?`<img class="cv" loading="lazy" alt="" src="${esc(b.cv)}" onerror="this.remove()">`:''}<div data-a="edit" style="flex:1"><b>${esc(b.t)}</b><small>${esc(b.a)}${b.r?' '+'★'.repeat(b.r):''}</small></div><button data-a="fav" aria-label="Favorite">${b.fav?'♥':'♡'}</button></div>`+
 (b.st=='reading'?`<div class="bar"><i style="width:${pct(b)}%"></i></div><div class="act"><span>Page ${b.cur}${b.p?' of '+b.p+' ('+pct(b)+'%)':''}</span><button data-a="add" data-n="10">+10</button><button data-a="add" data-n="25">+25</button><button data-a="log">Log</button><button data-a="done">Finish</button></div>`:
 b.st=='want'?`<div class="act"><button class="pri" data-a="start">Start reading</button></div>`:`<div class="act"><span>Finished ${esc(b.fin||'')}</span></div>`)+`</article>`;
 function render(){
  $('#tabs').innerHTML=TABS.map(([k,n])=>`<button data-t="${k}" class="${k==tab?'on':''}">${n}</button>`).join('');
- const old=!S.lb||Date.now()-S.lb>6048e5;$('#bn').hidden=!(S.books.length&&old&&tab!='backup');
+ const old=!S.lb||Date.now()-S.lb>6048e5||S.ch>=25;$('#bn').hidden=!(S.books.length&&old&&tab!='backup');
  $('#bn').innerHTML=`${S.lb?'Last backup '+ago(S.lb):'No backup yet'}. <button data-a="bk">Back up now</button>`;
- const isL=['reading','want','done','fav'].includes(tab);$('#q').hidden=!isL;const m=$('#main');
+ const isL=['reading','want','done','fav'].includes(tab);$('#q').hidden=$('#so').hidden=!isL;const m=$('#main');
  if(tab=='stats')m.innerHTML=stats();else if(tab=='backup'){m.innerHTML=backup();snaps()}
- else{let L=S.books.filter(b=>tab=='fav'?b.fav:b.st==tab);if(q)L=L.filter(b=>(b.t+' '+b.a).toLowerCase().includes(q));L.sort((a,b)=>b.u-a.u);
+ else{let L=S.books.filter(b=>tab=='fav'?b.fav:b.st==tab);if(q)L=L.filter(b=>(b.t+' '+b.a).toLowerCase().includes(q));L.sort(SORT[so]);
   m.innerHTML=L.map(card).join('')||'<p class="empty">Nothing here yet. Tap + to add a book.</p>'}}
 function pages(b,n){if(b.p)n=Math.min(n,b.p-b.cur);if(n<=0)return;b.cur+=n;const d=day(),l=b.log.find(x=>x[0]==d);l?l[1]+=n:b.log.push([d,n]);b.u=Date.now();if(b.p&&b.cur>=b.p)finish(b);else save()}
 function finish(b){if(b.p&&b.cur<b.p)return pages(b,b.p-b.cur);b.st='done';b.fin=day();b.u=Date.now();save();edit(b)}
 function edit(b){const n=!b;b=b||{id:uid(),t:'',a:'',p:0,cur:0,st:'want',r:0,n:'',log:[],fav:false,u:0};
  const o=(v,l,c)=>`<option value="${v}" ${v==c?'selected':''}>${l}</option>`;
- $('#dlg').innerHTML=`<h3>${n?'Add book':'Edit book'}</h3><input id="ft" placeholder="Title" value="${esc(b.t)}"><input id="fa" placeholder="Author" value="${esc(b.a)}"><div class="g"><input id="fp" type="number" inputmode="numeric" min="0" placeholder="Total pages" value="${b.p||''}"><input id="fc" type="number" inputmode="numeric" min="0" placeholder="Current page" value="${b.cur||''}"></div><div class="g"><select id="fs">${o('want','Want to read',b.st)+o('reading','Reading',b.st)+o('done','Finished',b.st)}</select><select id="fr">${[0,1,2,3,4,5].map(i=>o(i,i?'★'.repeat(i):'No rating',b.r)).join('')}</select></div><textarea id="fn" rows="3" placeholder="Notes">${esc(b.n)}</textarea><div class="row"><button id="no">Cancel</button>${n?'':'<button id="rm">Delete</button>'}<button class="pri" id="ok">Save</button></div>`;
+ $('#dlg').innerHTML=`<h3>${n?'Add book':'Edit book'}</h3><input id="ft" placeholder="Title" value="${esc(b.t)}"><div id="sg"></div><input id="fa" placeholder="Author" value="${esc(b.a)}"><div class="g"><input id="fp" type="number" inputmode="numeric" min="0" placeholder="Total pages" value="${b.p||''}"><input id="fc" type="number" inputmode="numeric" min="0" placeholder="Current page" value="${b.cur||''}"></div><div class="g"><select id="fs">${o('want','Want to read',b.st)+o('reading','Reading',b.st)+o('done','Finished',b.st)}</select><select id="fr">${[0,1,2,3,4,5].map(i=>o(i,i?'★'.repeat(i):'No rating',b.r)).join('')}</select></div><textarea id="fn" rows="3" placeholder="Notes">${esc(b.n)}</textarea><div class="row"><button id="no">Cancel</button>${n?'':'<button id="rm">Delete</button>'}<button class="pri" id="ok">Save</button></div>`;
+ let tmr;$('#ft').oninput=e=>{clearTimeout(tmr);const v=e.target.value.trim();if(v.length<3||!n){$('#sg').innerHTML='';return}tmr=setTimeout(async()=>{try{const r=(await(await fetch('https://openlibrary.org/search.json?limit=5&fields=title,author_name,number_of_pages_median,cover_i&q='+encodeURIComponent(v))).json()).docs;$('#sg').innerHTML=r.map((d,i)=>`<button class="sgb" data-i="${i}">${esc(d.title)} <small>${esc((d.author_name||[])[0]||'')}</small></button>`).join('');$('#sg').onclick=ev=>{const x=ev.target.closest('[data-i]');if(!x)return;const d=r[x.dataset.i];$('#ft').value=d.title;$('#fa').value=(d.author_name||[])[0]||'';$('#fp').value=d.number_of_pages_median||'';b.cv=d.cover_i?'https://covers.openlibrary.org/b/id/'+d.cover_i+'-M.jpg':'';$('#sg').innerHTML=''}}catch{}},350)};
  $('#ok').onclick=()=>{const t=$('#ft').value.trim();if(!t)return $('#ft').focus();
   Object.assign(b,{t,a:$('#fa').value.trim(),p:+$('#fp').value||0,cur:+$('#fc').value||0,st:$('#fs').value,r:+$('#fr').value,n:$('#fn').value,u:Date.now()});
   if(b.st=='done'){b.fin=b.fin||day();if(b.p)b.cur=b.p}if(n)S.books.push(b);$('#dlg').close();save()};
  $('#no').onclick=()=>$('#dlg').close();
- if(!n)$('#rm').onclick=()=>{if(confirm('Delete this book?')){S.books=S.books.filter(x=>x!==b);$('#dlg').close();save()}};
+ if(!n)$('#rm').onclick=()=>{if(confirm('Delete this book?')){S.books=S.books.filter(x=>x!==b);(S.del=S.del||{})[b.id]=Date.now();$('#dlg').close();save()}};
  $('#dlg').showModal()}
 function stats(){const y=day().slice(0,4),B=S.books,yr=B.filter(b=>b.st=='done'&&(b.fin||'').startsWith(y)).length,L=B.flatMap(b=>b.log),tot=L.reduce((s,x)=>s+x[1],0),by={};L.forEach(([d,n])=>by[d]=(by[d]||0)+n);
- let s=0,d=new Date();if(!by[day(d)])d.setDate(d.getDate()-1);while(by[day(d)]){s++;d.setDate(d.getDate()-1)}
+ const rs=B.filter(b=>b.r),ar=rs.length?(rs.reduce((s,b)=>s+b.r,0)/rs.length).toFixed(1):'–';let s=0,d=new Date();if(!by[day(d)])d.setDate(d.getDate()-1);while(by[day(d)]){s++;d.setDate(d.getDate()-1)}
  const w=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return[day(d).slice(8),by[day(d)]||0]}),mx=Math.max(1,...w.map(x=>x[1]));
- return `<div class="stats"><div><b>${yr} / ${S.goal}</b>books finished in ${y}</div><div><b>${s}</b>day streak</div><div><b>${tot}</b>pages logged</div><div><b>${B.length}</b>books on shelf</div></div><div class="chart">${w.map(([l,n])=>`<div title="${n} pages"><i style="height:${n/mx*100}%"></i><small>${l}</small></div>`).join('')}</div><button data-a="goal">Set yearly goal</button>`}
+ return `<div class="stats"><div><b>${yr} / ${S.goal}</b>books finished in ${y}</div><div><b>${s}</b>day streak</div><div><b>${tot}</b>pages logged</div><div><b>${B.length}</b>books on shelf</div><div><b>${ar}</b>average rating</div><div><b>${Object.keys(by).length?Math.round(tot/Object.keys(by).length):0}</b>pages per reading day</div></div><div class="chart">${w.map(([l,n])=>`<div title="${n} pages"><i style="height:${n/mx*100}%"></i><small>${l}</small></div>`).join('')}</div><button data-a="goal">Set yearly goal</button>`}
 const backup=()=>`<div class="panel"><h3>Backup</h3><p>Last backup: ${S.lb?new Date(S.lb).toLocaleString():'never'}. ${S.ch} changes since.</p><button class="pri" data-a="bk">Back up now (save to Files or iCloud)</button><button data-a="imp">Restore from a backup file</button><h3>Automatic snapshots</h3><p>One snapshot per day is kept on this phone for 8 days.</p><div id="snaps" class="panel"></div><p id="ps"></p></div>`;
 async function snaps(){const ks=(await dbKeys()).filter(k=>k.startsWith('snap-')).sort().reverse(),e=$('#snaps');if(e)e.innerHTML=ks.map(k=>`<button data-a="snap" data-k="${k}">Restore ${k.slice(5)}</button>`).join('')||'<p>None yet.</p>';
  navigator.storage?.persisted?.().then(p=>{const e=$('#ps');if(e)e.textContent=p?'Protected storage: on.':'Protected storage: not granted. Install to Home Screen and keep backing up.'})}
@@ -78,18 +79,18 @@ async function exportNow(){const f=new File([JSON.stringify(S,null,1)],`myshelf-
  S.lb=Date.now();S.ch=0;save(true)}
 async function restoreSnap(k){if(!confirm('Replace your shelf with snapshot '+k.slice(5)+'? Your current shelf is saved first.'))return;const s=await dbGet(k);if(!s)return;await dbSet('snap-'+day()+'-pre',S);S=s;save(true)}
 $('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.books))throw 0;
- const bs=j.books.filter(b=>b&&b.t).map(b=>({id:String(b.id||uid()),t:String(b.t),a:String(b.a||''),p:+b.p||0,cur:+b.cur||0,st:['want','reading','done'].includes(b.st)?b.st:'want',r:Math.min(5,+b.r||0),n:String(b.n||''),fav:!!b.fav,fin:b.fin?String(b.fin):'',log:Array.isArray(b.log)?b.log.filter(x=>Array.isArray(x)&&x.length==2):[],u:+b.u||0}));
+ const bs=j.books.filter(b=>b&&b.t).map(b=>({id:String(b.id||uid()),t:String(b.t),a:String(b.a||''),p:+b.p||0,cur:+b.cur||0,st:['want','reading','done'].includes(b.st)?b.st:'want',r:Math.min(5,+b.r||0),n:String(b.n||''),fav:!!b.fav,fin:b.fin?String(b.fin):'',cv:b.cv?String(b.cv):'',log:Array.isArray(b.log)?b.log.filter(x=>Array.isArray(x)&&x.length==2):[],u:+b.u||0}));
  await dbSet('snap-'+day()+'-pre',S);
- if(confirm(`Found ${bs.length} books.\nOK = merge with your current shelf\nCancel = replace your shelf`)){const m=new Map(S.books.map(b=>[b.id,b]));bs.forEach(b=>{const o=m.get(b.id);if(!o||b.u>o.u)m.set(b.id,b)});S.books=[...m.values()]}else S.books=bs;
+ if(confirm(`Found ${bs.length} books.\nOK = merge with your current shelf\nCancel = replace your shelf`)){const m=new Map(S.books.map(b=>[b.id,b]));bs.forEach(b=>{if((S.del||{})[b.id]>b.u)return;const o=m.get(b.id);if(!o||b.u>o.u)m.set(b.id,b)});S.books=[...m.values()]}else S.books=bs;
  if(j.goal>0)S.goal=j.goal;save(true)}catch{alert('That file is not a valid My Shelf backup.')}};
 document.onclick=e=>{const t=e.target.closest('[data-t]');if(t){tab=t.dataset.t;render();return}
  const a=e.target.closest('[data-a]');if(!a)return;const c=a.closest('.card'),b=c&&S.books.find(x=>x.id==c.dataset.id),k=a.dataset.a;
  if(b&&k=='fav'){b.fav=!b.fav;b.u=Date.now();save()}else if(b&&k=='add')pages(b,+a.dataset.n);
- else if(b&&k=='log'){const n=parseInt(prompt('Pages read now?'),10);if(n>0)pages(b,n)}
+ else if(b&&k=='log'){const v=prompt('Pages read now? Or type p120 for the page you are on.','');if(v==null)return;const m=/^p\s*(\d+)$/i.exec(v.trim()),n=m?+m[1]-b.cur:parseInt(v,10);if(n>0)pages(b,n)}
  else if(b&&k=='start'){b.st='reading';b.u=Date.now();save()}else if(b&&k=='done')finish(b);else if(b&&k=='edit')edit(b);
  else if(k=='bk')exportNow();else if(k=='imp')$('#file').click();else if(k=='snap')restoreSnap(a.dataset.k);
  else if(k=='goal'){const g=parseInt(prompt('Books per year?',S.goal),10);if(g>0){S.goal=g;save()}}};
-$('#fab').onclick=()=>edit();$('#q').oninput=e=>{q=e.target.value.toLowerCase();render()};
+$('#so').onchange=e=>{so=e.target.value;render()};$('#fab').onclick=()=>edit();$('#q').oninput=e=>{q=e.target.value.toLowerCase();render()};
 addEventListener('pagehide',()=>persist());document.addEventListener('visibilitychange',()=>document.hidden&&persist());
 (async()=>{await load();try{const k='snap-'+day();if(S.books.length&&!(await dbGet(k)))await dbSet(k,S);
  for(const x of (await dbKeys()).filter(k=>k.startsWith('snap-')).sort().slice(0,-8))await tx('readwrite',o=>o.delete(x))}catch{}
