@@ -52,6 +52,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .rail{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}.bk{flex:none;width:112px}.bk .cv{width:112px;height:168px;font-size:36px}
 .bk b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font:700 14px/1.25 ui-serif,Georgia,serif;margin-top:6px}.bk small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bk button{width:100%;margin-top:6px;padding:7px;font-size:12px}
 [dir=rtl] #fab{right:auto;left:18px}[dir=rtl] .cv{border-radius:7px 3px 3px 7px;box-shadow:inset -5px 0 0 #0003}
+.plist{max-height:42vh;overflow-y:auto;display:grid;gap:6px;margin:8px 0}.pk{display:flex;gap:10px;align-items:center;background:var(--bg);border-radius:10px;padding:8px 10px}.pk input{width:22px;height:22px;flex:none}.pk span{flex:1}.pk b,.pk small{display:block}.pk.dim{opacity:.45}
 </style></head><body>
 <header><h1 id="h1">My Shelf</h1><span id="st"></span><button class="ic" id="fvb" aria-label="Favorites only">♡</button></header>
 <nav id="tabs"></nav><div id="bn" hidden></div><div id="inst" hidden>Install it: tap Share, then Add to Home Screen. Safari can erase data of unused browser tabs after about 7 days; installed apps are exempt.</div>
@@ -95,8 +96,8 @@ function pages(b,n){if(b.p)n=Math.min(n,b.p-b.cur);if(n<=0)return;b.cur+=n;const
 function finish(b){if(b.p&&b.cur<b.p)return pages(b,b.p-b.cur);b.st='done';b.fin=day();b.u=Date.now();save();edit(b)}
 function edit(b){const n=!b;b=b||{id:uid(),t:'',a:'',p:0,cur:0,st:'want',r:0,n:'',log:[],fav:false,u:0};
  const o=(v,l,c)=>`<option value="${v}" ${v==c?'selected':''}>${l}</option>`;
- $('#dlg').innerHTML=`<h3>${n?'Add book':'Edit book'}</h3><input id="ft" dir="auto" placeholder="Title" value="${esc(b.t)}"><div id="sg"></div><input id="fa" dir="auto" placeholder="Author" value="${esc(b.a)}"><div class="g"><input id="fp" type="number" inputmode="numeric" min="0" placeholder="Total pages" value="${b.p||''}"><input id="fc" type="number" inputmode="numeric" min="0" placeholder="Current page" value="${b.cur||''}"></div><div class="g"><select id="fs">${o('want','Want to read',b.st)+o('reading','Reading',b.st)+o('done','Finished',b.st)}</select><select id="fr">${[0,1,2,3,4,5].map(i=>o(i,i?'★'.repeat(i):'No rating',b.r)).join('')}</select></div><textarea id="fn" rows="3" placeholder="Notes">${esc(b.n)}</textarea><div class="row"><button id="no">Cancel</button>${n?'':'<button id="rm">Delete</button>'}<button class="pri" id="ok">Save</button></div>`;
- let tmr;$('#ft').oninput=e=>{clearTimeout(tmr);const v=e.target.value.trim();if(v.length<3||!n){$('#sg').innerHTML='';return}tmr=setTimeout(async()=>{$('#sg').innerHTML='<small>Searching…</small>';const r=await findBooks(v);if($('#ft').value.trim()!=v)return;
+ $('#dlg').innerHTML=`<h3>${n?'Add book':'Edit book'}</h3><input id="ft" dir="auto" placeholder="Title" value="${esc(b.t)}">${n?'<button id="arl" class="sgb">Arabic library</button>':''}<div id="sg"></div><input id="fa" dir="auto" placeholder="Author" value="${esc(b.a)}"><div class="g"><input id="fp" type="number" inputmode="numeric" min="0" placeholder="Total pages" value="${b.p||''}"><input id="fc" type="number" inputmode="numeric" min="0" placeholder="Current page" value="${b.cur||''}"></div><div class="g"><select id="fs">${o('want','Want to read',b.st)+o('reading','Reading',b.st)+o('done','Finished',b.st)}</select><select id="fr">${[0,1,2,3,4,5].map(i=>o(i,i?'★'.repeat(i):'No rating',b.r)).join('')}</select></div><textarea id="fn" rows="3" placeholder="Notes">${esc(b.n)}</textarea><div class="row"><button id="no">Cancel</button>${n?'':'<button id="rm">Delete</button>'}<button class="pri" id="ok">Save</button></div>`;
+ if(n)$('#arl').onclick=()=>{$('#dlg').close();arPicker()};let tmr;$('#ft').oninput=e=>{clearTimeout(tmr);const v=e.target.value.trim();if(v.length<3||!n){$('#sg').innerHTML='';return}tmr=setTimeout(async()=>{$('#sg').innerHTML='<small>Searching…</small>';const r=await findBooks(v);if($('#ft').value.trim()!=v)return;
   $('#sg').innerHTML=r.length?r.map((d,i)=>`<button class="sgb" data-i="${i}">${esc(d.title)} <small>${esc(d.author)}</small></button>`).join(''):'<small>No matches. You can type the details yourself.</small>';
   $('#sg').onclick=ev=>{const x=ev.target.closest('[data-i]');if(!x)return;const d=r[x.dataset.i];$('#ft').value=d.title;$('#fa').value=d.author;$('#fp').value=d.pages||'';b.cv=d.cover;$('#sg').innerHTML=''}},350)};
  $('#ok').onclick=()=>{const t=$('#ft').value.trim();if(!t)return $('#ft').focus();
@@ -291,10 +292,10 @@ const AR={'Reading':'القراءة','Want':'أريد قراءته','Done':'ال
 'Account':'الحساب','Log in or sign up':'تسجيل الدخول أو إنشاء حساب','Settings':'الإعدادات','Customize':'تخصيص','Tabs, theme, colors':'التبويبات والمظهر والألوان','Backup and data':'النسخ الاحتياطي والبيانات','Back up, restore, import':'نسخ، استعادة، استيراد','Bottom bar':'الشريط السفلي','The first five sections sit in the bar next to Me. Others go under More. Use the arrows to rearrange.':'أول خمسة أقسام تظهر في الشريط بجانب أنا، والبقية تحت المزيد. استخدم الأسهم لإعادة الترتيب.','↑ in the bar · under More ↓':'↑ في الشريط · تحت المزيد ↓','Open the app on':'افتح التطبيق على','Theme':'المظهر','Auto':'تلقائي','Light':'فاتح','Dark':'داكن','Appearance':'المظهر','Pick a color or slide for any shade.':'اختر لونًا أو حرّك الشريط لأي درجة.','Card size':'حجم البطاقات','Comfortable':'مريح','Compact':'مضغوط','Language':'اللغة',
 'Backup':'النسخ الاحتياطي','Back up now (save to Files or iCloud)':'احفظ نسخة الآن (في الملفات أو iCloud)','Restore from a backup file':'استعادة من ملف نسخة احتياطية','Import from Goodreads (CSV)':'استيراد من Goodreads (CSV)','Export books as CSV':'تصدير الكتب بصيغة CSV','Automatic snapshots':'اللقطات التلقائية','One snapshot per day is kept on this phone for 8 days.':'تُحفظ لقطة يومية على هذا الهاتف لمدة 8 أيام.','None yet.':'لا يوجد بعد.','Back up now':'احفظ نسخة الآن','No backup yet.':'لا توجد نسخة احتياطية بعد.',
 'Email':'البريد الإلكتروني','Password':'كلمة المرور','Username (sign up only)':'اسم المستخدم (للتسجيل فقط)','Log in':'تسجيل الدخول','Create account':'إنشاء حساب','Sync now':'مزامنة الآن','Log out':'تسجيل الخروج','Your profile':'ملفك الشخصي','Display name':'الاسم المعروض','Short bio':'نبذة قصيرة','Choose photo':'اختيار صورة','Remove':'إزالة','What friends can see':'ما يراه أصدقاؤك','Reading now':'أقرأ الآن','Show my favorites in Discover (anonymous)':'إظهار مفضلاتي في اكتشف (دون ذكر اسمي)','Save profile':'حفظ الملف','Your shelf is backed up to your account. Friends only see what you allow in your profile below.':'رفّك محفوظ في حسابك. لا يرى أصدقاؤك إلا ما تسمح به في ملفك أدناه.',
-'Friend\'s username':'اسم مستخدم صديقك','Requests':'الطلبات','Accept':'قبول','Decline':'رفض','Recommended to you':'موصى به لك','Dismiss':'تجاهل','Add a friend by username to see their favorite books.':'أضف صديقًا باسم المستخدم لترى كتبه المفضلة.','Loved and reading':'المفضلة وقيد القراءة','Nothing from friends yet.':'لا شيء من الأصدقاء بعد.','Log in from the Me tab to add friends and share books.':'سجّل الدخول من تبويب أنا لإضافة الأصدقاء ومشاركة الكتب.','No reader with that username.':'لا يوجد قارئ بهذا الاسم.','Request sent ✓':'تم إرسال الطلب ✓','Loading…':'جارٍ التحميل…','Searching…':'جارٍ البحث…','No matches. You can type the details yourself.':'لا توجد نتائج. يمكنك كتابة التفاصيل بنفسك.','No quotes yet.':'لا توجد اقتباسات بعد.','No stats shared yet.':'لم تتم مشاركة إحصائيات بعد.','‹ Friends':'الأصدقاء ›','‹ Me':'أنا ›','books this year':'كتب هذا العام','Add a friend first (Friends tab)':'أضف صديقًا أولًا (تبويب الأصدقاء)','Sent ✓':'تم الإرسال ✓','Synced ☁':'تمت المزامنة ☁','Saved ✓':'تم الحفظ ✓','Profile saved ✓':'تم حفظ الملف ✓',
+'Friend\'s username':'اسم مستخدم صديقك','Requests':'الطلبات','Accept':'قبول','Decline':'رفض','Recommended to you':'موصى به لك','Dismiss':'تجاهل','Add a friend by username to see their favorite books.':'أضف صديقًا باسم المستخدم لترى كتبه المفضلة.','Loved and reading':'المفضلة وقيد القراءة','Nothing from friends yet.':'لا شيء من الأصدقاء بعد.','Log in from the Me tab to add friends and share books.':'سجّل الدخول من تبويب أنا لإضافة الأصدقاء ومشاركة الكتب.','No reader with that username.':'لا يوجد قارئ بهذا الاسم.','Request sent ✓':'تم إرسال الطلب ✓','Loading…':'جارٍ التحميل…','Arabic library':'المكتبة العربية','All':'الكل','No matches.':'لا توجد نتائج.','Searching…':'جارٍ البحث…','No matches. You can type the details yourself.':'لا توجد نتائج. يمكنك كتابة التفاصيل بنفسك.','No quotes yet.':'لا توجد اقتباسات بعد.','No stats shared yet.':'لم تتم مشاركة إحصائيات بعد.','‹ Friends':'الأصدقاء ›','‹ Me':'أنا ›','books this year':'كتب هذا العام','Add a friend first (Friends tab)':'أضف صديقًا أولًا (تبويب الأصدقاء)','Sent ✓':'تم الإرسال ✓','Synced ☁':'تمت المزامنة ☁','Saved ✓':'تم الحفظ ✓','Profile saved ✓':'تم حفظ الملف ✓',
 'Pick what you like and we will find books for you.':'اختر ما تحب وسنجد لك كتبًا.','Finding books…':'نبحث عن كتب…','No books found. Check your connection.':'لم نجد كتبًا. تحقق من اتصالك.','From readers on My Shelf':'من قراء رفّي','Fiction':'روايات','Fantasy':'فانتازيا','Sci-fi':'خيال علمي','Mystery':'غموض وتحقيق','Romance':'رومانسية','History':'تاريخ','Science':'علوم','Philosophy':'فلسفة','Biography':'سير ذاتية','Self-help':'تطوير الذات','Religion':'دين','Poetry':'شعر','Technology':'تقنية','Arabic books':'كتب عربية','Arabic novels':'روايات عربية','Islamic books (Arabic)':'كتب إسلامية','Arabic poetry':'شعر عربي','Arabic history':'تاريخ عربي','Arabic self-development':'تطوير الذات (عربي)','Arabic children\'s books':'كتب أطفال عربية',
 'Install it: tap Share, then Add to Home Screen. Safari can erase data of unused browser tabs after about 7 days; installed apps are exempt.':'ثبّته: اضغط مشاركة ثم إضافة إلى الشاشة الرئيسية. قد يمحو سفاري بيانات علامات المتصفح غير المستخدمة بعد نحو 7 أيام، أما التطبيقات المثبتة فلا.'};
-const ARX=[[/^(\d+) \/ (\d+) pages · (\d+)%$/,(a,b,c)=>`${a} / ${b} صفحة · ${c}%`],[/^(\d+) pages$/,a=>`${a} صفحة`],[/^of (\d+) pages today$/,a=>`من ${a} صفحة اليوم`],[/^Finished (.+)$/,a=>`انتهى في ${a}`],[/^(\d+) quotes?$/,a=>`${a} اقتباس`],[/^books finished in (\d+)$/,a=>`كتب منتهية في ${a}`],[/^More by (.+)$/,a=>`المزيد من ${a}`],[/^Last backup (\d+)d ago\.$/,a=>`آخر نسخة قبل ${a} يوم.`],[/^Last backup today\.$/,()=>'آخر نسخة اليوم.'],[/^Imported (\d+) new books$/,a=>`تم استيراد ${a} كتاب`],[/^Friends \((\d+)\)$/,a=>`الأصدقاء (${a})`],[/^Send “(.+)”$/,a=>`إرسال «${a}»`],[/^Page (\d+) of (\d+)$/,(a,b)=>`الصفحة ${a} من ${b}`],[/^@(.+) keeps this private\.$/,a=>`@${a} يفضّل إبقاء هذا خاصًا.`],[/^Waiting for: (.+)$/,a=>`بانتظار: ${a}`]];
+const ARX=[[/^(\d+) \/ (\d+) pages · (\d+)%$/,(a,b,c)=>`${a} / ${b} صفحة · ${c}%`],[/^(\d+) pages$/,a=>`${a} صفحة`],[/^of (\d+) pages today$/,a=>`من ${a} صفحة اليوم`],[/^Finished (.+)$/,a=>`انتهى في ${a}`],[/^(\d+) quotes?$/,a=>`${a} اقتباس`],[/^books finished in (\d+)$/,a=>`كتب منتهية في ${a}`],[/^More by (.+)$/,a=>`المزيد من ${a}`],[/^Last backup (\d+)d ago\.$/,a=>`آخر نسخة قبل ${a} يوم.`],[/^Last backup today\.$/,()=>'آخر نسخة اليوم.'],[/^Imported (\d+) new books$/,a=>`تم استيراد ${a} كتاب`],[/^Friends \((\d+)\)$/,a=>`الأصدقاء (${a})`],[/^Send “(.+)”$/,a=>`إرسال «${a}»`],[/^Page (\d+) of (\d+)$/,(a,b)=>`الصفحة ${a} من ${b}`],[/^@(.+) keeps this private\.$/,a=>`@${a} يفضّل إبقاء هذا خاصًا.`],[/^(\d+) books added$/,a=>`تمت إضافة ${a} كتاب`],[/^Waiting for: (.+)$/,a=>`بانتظار: ${a}`]];
 const isAr=()=>((S&&S.lang)||(navigator.language||'').slice(0,2))=='ar';
 const rx=t=>{for(const[re,f]of ARX){const m=re.exec(t);if(m)return f(...m.slice(1))}};
 function trn(n){if(n.nodeType==3){const s=n.nodeValue,t=s.trim();if(!t)return;const r=AR[t]??rx(t);if(r!==undefined)n.nodeValue=s.replace(t,r);return}
@@ -310,16 +311,161 @@ async function discLoad(force){if(!force&&(DL||(DC.rows&&Date.now()-DC.t<6e5)))r
  const fa=[...new Set(S.books.filter(b=>b.fav||b.r>=4).map(b=>b.a).filter(Boolean))].slice(0,3);
  if(me)jobs.push(Promise.resolve(sb.rpc('popular_books',{lim:15})).then(r=>({t:'From readers on My Shelf',b:(r.data||[]).map(x=>({t:x.title,a:x.author,c:x.cover,p:x.pages,n:x.fans}))})).catch(()=>null));
  fa.forEach(a=>jobs.push(AR_RE.test(a)?gb('inauthor:"'+a+'"',true,10).then(r=>({t:'More by '+a,b:r.map(x=>({t:x.title,a:x.author,c:x.cover,p:x.pages}))})):OLS(U+'search.json?limit=10'+F+'&author='+encodeURIComponent(a)).then(j=>j&&{t:'More by '+a,b:(j.docs||[]).map(dm)})));
- ints.forEach(k=>jobs.push(ARQ[k]?gb(ARQ[k],true,12).then(r=>({t:(INTS.find(x=>x[0]==k)||[0,k])[1],b:r.map(x=>({t:x.title,a:x.author,c:x.cover,p:x.pages}))})):OLS(U+'subjects/'+k+'.json?limit=12').then(j=>j&&{t:(INTS.find(x=>x[0]==k)||[0,k])[1],b:(j.works||[]).map(w=>({t:w.title,a:w.authors&&w.authors[0]&&w.authors[0].name,c:cvu(w.cover_id)}))})));
+ ints.forEach(k=>jobs.push(ARQ[k]?gb(ARQ[k],true,12).then(r=>({t:(INTS.find(x=>x[0]==k)||[0,k])[1],b:LOC(k).slice(0,25).concat(r).map(x=>({t:x.title,a:x.author,c:x.cover,p:x.pages}))})):OLS(U+'subjects/'+k+'.json?limit=12').then(j=>j&&{t:(INTS.find(x=>x[0]==k)||[0,k])[1],b:(j.works||[]).map(w=>({t:w.title,a:w.authors&&w.authors[0]&&w.authors[0].name,c:cvu(w.cover_id)}))})));
  const R=(await Promise.all(jobs)).filter(r=>r&&r.b.length).map(r=>({t:r.t,b:r.b.filter(b=>b.t&&!have.has((b.t+'|'+(b.a||'')).toLowerCase()))})).filter(r=>r.b.length);
  if(g!=DG)return;DL=false;DC={rows:R,t:Date.now()};if(tab=='discover')render()}
 const bkTile=(b,r,i)=>`<div class="bk"><div class="cv" style="--h:${hue(b.t)}"><span>${esc((b.t[0]||'?').toUpperCase())}</span>${b.c?`<img loading="lazy" alt="" src="${esc(b.c)}" onerror="this.remove()">`:''}</div><b>${esc(b.t)}</b><small>${esc(b.a||'')}${b.n?' · ♥ '+b.n:''}</small><button data-a="dadd" data-r="${r}" data-i="${i}">Want to read</button></div>`;
-function discView(){const cur=S.int&&S.int.length?S.int:DEF();return `<div class="panel"><p>Pick what you like and we will find books for you.</p><div class="chips">${(isAr()?[...INTS].sort((a,b)=>b[0].startsWith('ar')-a[0].startsWith('ar')):INTS).map(([k,n])=>`<button data-a="dint" data-k="${k}" class="${cur.includes(k)?'on':''}">${n}</button>`).join('')}</div>`+(DC.rows?(DC.rows.map((r,ri)=>`<h3>${esc(r.t)}</h3><div class="rail">${r.b.map((b,i)=>bkTile(b,ri,i)).join('')}</div>`).join('')||'<p class="empty">No books found. Check your connection.</p>'):'<p class="empty">Finding books…</p>')+'</div>'}
+function discView(){const cur=S.int&&S.int.length?S.int:DEF();return `<div class="panel"><div class="act"><button class="pri" data-a="arlib">Arabic library</button></div><p>Pick what you like and we will find books for you.</p><div class="chips">${(isAr()?[...INTS].sort((a,b)=>b[0].startsWith('ar')-a[0].startsWith('ar')):INTS).map(([k,n])=>`<button data-a="dint" data-k="${k}" class="${cur.includes(k)?'on':''}">${n}</button>`).join('')}</div>`+(DC.rows?(DC.rows.map((r,ri)=>`<h3>${esc(r.t)}</h3><div class="rail">${r.b.map((b,i)=>bkTile(b,ri,i)).join('')}</div>`).join('')||'<p class="empty">No books found. Check your connection.</p>'):'<p class="empty">Finding books…</p>')+'</div>'}
 CL.dadd=a=>{const b=DC.rows[+a.dataset.r].b[+a.dataset.i];addWant(b.t,b.a,b.c,b.p)};
 CL.dint=a=>{const k=a.dataset.k,l=new Set(S.int&&S.int.length?S.int:DEF());l.has(k)?l.delete(k):l.add(k);S.int=[...l];DC={rows:null,t:0};save();discLoad(true)};
 const AR_RE=/[\u0600-\u06FF]/;
 async function gb(q,ar,n){const j=await OLS('https://www.googleapis.com/books/v1/volumes?printType=books&maxResults='+(n||8)+(ar?'&langRestrict=ar':'')+'&q='+encodeURIComponent(q));return((j&&j.items)||[]).map(i=>{const v=i.volumeInfo||{};return{title:v.title||'',author:(v.authors||[])[0]||'',pages:v.pageCount||0,cover:((v.imageLinks||{}).thumbnail||'').replace('http:','https:')}}).filter(b=>b.title)}
-async function findBooks(v){if(AR_RE.test(v))return gb(v,true,8);const j=await OLS('https://openlibrary.org/search.json?limit=6&fields=title,author_name,number_of_pages_median,cover_i&q='+encodeURIComponent(v)),r=((j&&j.docs)||[]).map(d=>({title:d.title,author:(d.author_name||[])[0]||'',pages:d.number_of_pages_median||0,cover:cvu(d.cover_i)}));return r.length?r:gb(v,false,6)}
+async function findBooks(v){if(AR_RE.test(v)){const L=loc(v),G=await gb(v,true,8),seen=new Set(L.map(b=>nrm(b.title)));return L.concat(G.filter(b=>!seen.has(nrm(b.title))))}const j=await OLS('https://openlibrary.org/search.json?limit=6&fields=title,author_name,number_of_pages_median,cover_i&q='+encodeURIComponent(v)),r=((j&&j.docs)||[]).map(d=>({title:d.title,author:(d.author_name||[])[0]||'',pages:d.number_of_pages_median||0,cover:cvu(d.cover_i)}));return r.length?r:gb(v,false,6)}
+const ARB=`ثلاثية غرناطة|رضوى عاشور|n
+بين القصرين|نجيب محفوظ|n
+قصر الشوق|نجيب محفوظ|n
+السكرية|نجيب محفوظ|n
+أولاد حارتنا|نجيب محفوظ|n
+اللص والكلاب|نجيب محفوظ|n
+زقاق المدق|نجيب محفوظ|n
+الحرافيش|نجيب محفوظ|n
+ميرامار|نجيب محفوظ|n
+ثرثرة فوق النيل|نجيب محفوظ|n
+الطريق|نجيب محفوظ|n
+خان الخليلي|نجيب محفوظ|n
+السمان والخريف|نجيب محفوظ|n
+بداية ونهاية|نجيب محفوظ|n
+الشحاذ|نجيب محفوظ|n
+حديث الصباح والمساء|نجيب محفوظ|n
+موسم الهجرة إلى الشمال|الطيب صالح|n
+عرس الزين|الطيب صالح|n
+مدن الملح|عبد الرحمن منيف|n
+عمارة يعقوبيان|علاء الأسواني|n
+شيكاغو|علاء الأسواني|n
+ذاكرة الجسد|أحلام مستغانمي|n
+فوضى الحواس|أحلام مستغانمي|n
+عابر سرير|أحلام مستغانمي|n
+الأسود يليق بك|أحلام مستغانمي|n
+ساق البامبو|سعود السنعوسي|n
+فئران أمي حصة|سعود السنعوسي|n
+عزازيل|يوسف زيدان|n
+ظل الأفعى|يوسف زيدان|n
+النبطي|يوسف زيدان|n
+يوتوبيا|أحمد خالد توفيق|n
+ما وراء الطبيعة|أحمد خالد توفيق|n
+ترمي بشرر|عبده خال|n
+رجال في الشمس|غسان كنفاني|n
+عائد إلى حيفا|غسان كنفاني|n
+أرض البرتقال الحزين|غسان كنفاني|n
+الخبز الحافي|محمد شكري|n
+الأيام|طه حسين|n
+دعاء الكروان|طه حسين|n
+عودة الروح|توفيق الحكيم|n
+يوميات نائب في الأرياف|توفيق الحكيم|n
+عصفور من الشرق|توفيق الحكيم|n
+قنديل أم هاشم|يحيى حقي|n
+الحي اللاتيني|سهيل إدريس|n
+بنات الرياض|رجاء الصانع|n
+أرض زيكولا|عمرو عبد الحميد|n
+في قلبي أنثى عبرية|خولة حمدي|n
+فرانكشتاين في بغداد|أحمد سعداوي|n
+الأجنحة المتكسرة|جبران خليل جبران|n
+مئة عام من العزلة|غابرييل غارسيا ماركيز|t
+الحب في زمن الكوليرا|غابرييل غارسيا ماركيز|t
+الأمير الصغير|أنطوان دو سانت إكزوبيري|t
+الجريمة والعقاب|فيودور دوستويفسكي|t
+الإخوة كرامازوف|فيودور دوستويفسكي|t
+1984|جورج أورويل|t
+مزرعة الحيوان|جورج أورويل|t
+الخيميائي|باولو كويلو|t
+الغريب|ألبير كامو|t
+الطاعون|ألبير كامو|t
+البؤساء|فيكتور هوغو|t
+أحدب نوتردام|فيكتور هوغو|t
+ذهب مع الريح|مارغريت ميتشل|t
+كبرياء وهوى|جين أوستن|t
+قواعد العشق الأربعون|إليف شافاق|t
+ظل الريح|كارلوس زافون|t
+المسخ|فرانز كافكا|t
+آنا كارنينا|ليو تولستوي|t
+الحرب والسلام|ليو تولستوي|t
+قصة مدينتين|تشارلز ديكنز|t
+أوليفر تويست|تشارلز ديكنز|t
+هاري بوتر وحجر الفيلسوف|ج. ك. رولينغ|t
+سيد الخواتم|ج. ر. ر. تولكين|t
+محاط بالحمقى|توماس إريكسون|t
+كيف تكسب الأصدقاء وتؤثر في الناس|ديل كارنيجي|s
+دع القلق وابدأ الحياة|ديل كارنيجي|s
+العادات السبع للناس الأكثر فعالية|ستيفن كوفي|s
+الأب الغني والأب الفقير|روبرت كيوساكي|s
+قوة العادات|تشارلز دويج|s
+العادات الذرية|جيمس كلير|s
+فن اللامبالاة|مارك مانسون|s
+التفكير السريع والبطيء|دانيال كانمان|s
+قوة الآن|إيكهارت تول|s
+فكر تصبح غنيا|نابليون هيل|s
+السر|روندا بايرن|s
+أسرار عقل المليونير|ت. هارف إيكر|s
+لا تحزن|عائض القرني|s
+فن الحرب|صن تزو|h
+الأمير|نيكولو مكيافيلي|h
+العاقل: تاريخ مختصر للجنس البشري|يوفال نوح هراري|h
+قصة الحضارة|ول ديورانت|h
+مقدمة ابن خلدون|ابن خلدون|h
+كليلة ودمنة|ابن المقفع|h
+ألف ليلة وليلة|مجهول|h
+البخلاء|الجاحظ|h
+كتاب الحيوان|الجاحظ|h
+الأغاني|أبو الفرج الأصفهاني|h
+رسالة الغفران|أبو العلاء المعري|h
+طوق الحمامة|ابن حزم|h
+رحلة ابن بطوطة|ابن بطوطة|h
+البداية والنهاية|ابن كثير|h
+تاريخ الرسل والملوك|الطبري|h
+سير أعلام النبلاء|الذهبي|h
+صيد الخاطر|ابن الجوزي|h
+رحلتي من الشك إلى الإيمان|مصطفى محمود|i
+الله والإنسان|مصطفى محمود|i
+الرحيق المختوم|صفي الرحمن المباركفوري|i
+رياض الصالحين|الإمام النووي|i
+الأربعون النووية|الإمام النووي|i
+الأذكار|الإمام النووي|i
+حصن المسلم|سعيد بن علي القحطاني|i
+زاد المعاد|ابن القيم|i
+مدارج السالكين|ابن القيم|i
+الداء والدواء|ابن القيم|i
+الفوائد|ابن القيم|i
+قصص الأنبياء|ابن كثير|i
+تفسير القرآن العظيم|ابن كثير|i
+صحيح البخاري|الإمام البخاري|i
+صحيح مسلم|الإمام مسلم|i
+إحياء علوم الدين|أبو حامد الغزالي|i
+المنقذ من الضلال|أبو حامد الغزالي|i
+تهافت الفلاسفة|أبو حامد الغزالي|i
+ديوان المتنبي|المتنبي|p
+جدارية|محمود درويش|p
+في حضرة الغياب|محمود درويش|p
+لماذا تركت الحصان وحيدا|محمود درويش|p
+أنشودة المطر|بدر شاكر السياب|p
+الشوقيات|أحمد شوقي|p
+النبي|جبران خليل جبران|p
+دمعة وابتسامة|جبران خليل جبران|p
+رباعيات الخيام|عمر الخيام|p
+الأعمال الشعرية الكاملة|نزار قباني|p`.split('\n').map(l=>l.split('|'));
+const CATS=[['n','روايات'],['t','مترجمات'],['s','تطوير الذات'],['h','تراث وفكر'],['i','إسلاميات'],['p','شعر']],ARC={ar_novels:'n',ar_islam:'i',ar_poetry:'p',ar_history:'h',ar_selfhelp:'s'};
+const nrm=s=>s.replace(/[\u064B-\u0652\u0670\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').toLowerCase();
+const LOC=k=>ARB.filter(b=>!ARC[k]||b[2]==ARC[k]).map(b=>({title:b[0],author:b[1],cover:'',pages:0})),loc=v=>{const q=nrm(v);return ARB.filter(b=>nrm(b[0]+' '+b[1]).includes(q)).slice(0,6).map(b=>({title:b[0],author:b[1],cover:'',pages:0}))};
+function arPicker(){const st={c:'',q:'',sel:new Set()},dlg=$('#dlg');
+ const draw=()=>{const have=new Set(S.books.map(b=>nrm(b.t))),L=ARB.map((b,i)=>[b,i]).filter(([b])=>(!st.c||b[2]==st.c)&&(!st.q||nrm(b[0]+' '+b[1]).includes(st.q)));
+  $('#pl').innerHTML=L.map(([b,i])=>{const h=have.has(nrm(b[0]));return `<label class="pk ${h?'dim':''}"><input type="checkbox" data-i="${i}" ${st.sel.has(i)?'checked':''} ${h?'disabled':''}><span><b dir="rtl">${b[0]}</b><small dir="rtl">${b[1]}${h?' · على رفك':''}</small></span></label>`}).join('')||'<p class="empty">No matches.</p>';$('#pcn').textContent=st.sel.size;$('#pa').disabled=!st.sel.size};
+ dlg.innerHTML=`<h3>Arabic library</h3><input id="pq" class="in" dir="auto" placeholder="Search title or author"><div class="chips" id="pc" style="margin:8px 0"><button data-c="" class="on">All</button>${CATS.map(([k,n])=>`<button data-c="${k}">${n}</button>`).join('')}</div><div id="pl" class="plist"></div><select id="ps" class="in"><option value="want">Want to read</option><option value="reading">Reading</option><option value="done">Finished</option></select><div class="row"><button id="no">Cancel</button><button class="pri" id="pa">Add <span id="pcn">0</span></button></div>`;
+ $('#pq').oninput=e=>{st.q=nrm(e.target.value.trim());draw()};
+ $('#pc').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;st.c=b.dataset.c;[...$('#pc').children].forEach(x=>x.classList.toggle('on',x==b));draw()};
+ $('#pl').onchange=e=>{const i=+e.target.dataset.i;e.target.checked?st.sel.add(i):st.sel.delete(i);$('#pcn').textContent=st.sel.size;$('#pa').disabled=!st.sel.size};
+ $('#no').onclick=()=>dlg.close();
+ $('#pa').onclick=()=>{const stt=$('#ps').value,now=Date.now();let n=0;st.sel.forEach(i=>{const[t,a]=ARB[i];S.books.push({id:uid(),t,a,p:0,cur:0,st:stt,r:0,n:'',fav:false,log:[],ses:[],cv:'',fin:stt=='done'?day():'',u:now+n});n++});dlg.close();save();toast(n+' books added')};
+ draw();dlg.showModal()}
+CL.arlib=()=>arPicker();
 let tt;function toast(m,fn){const t=$('#toast');t.innerHTML=esc(m)+(fn?' <button>Undo</button>':'');t.hidden=false;if(fn)t.querySelector('button').onclick=()=>{fn();t.hidden=true};clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,6000)}
 document.onclick=e=>{const t=e.target.closest('[data-t]');if(t){tab=t.dataset.t;if(tab=='backup')MP='home';q='';$('#q').value='';render();if(tab=='friends'&&me)loadSocial();if(tab=='discover')discLoad();return}
  const a=e.target.closest('[data-a]');if(!a)return;const c=a.closest('.card'),b=c&&S.books.find(x=>x.id==c.dataset.id),k=a.dataset.a,hc=a.closest('.hl'),hh=hc&&(S.hl||[]).find(x=>x.id==hc.dataset.id);
