@@ -1,0 +1,24 @@
+-- My Shelf cloud schema: paste into Supabase > SQL Editor > Run
+create table profiles(id uuid primary key references auth.users on delete cascade, username text unique not null check (username ~ '^[a-z0-9_]{3,20}$'), created_at timestamptz default now());
+create table friendships(id uuid primary key default gen_random_uuid(), requester uuid not null references profiles(id) on delete cascade, addressee uuid not null references profiles(id) on delete cascade, status text not null default 'pending', created_at timestamptz default now(), unique(requester,addressee), check (requester<>addressee));
+create table shared_books(owner uuid references profiles(id) on delete cascade, book_id text, title text, author text, pages int, status text, rating int, fav bool, cover text, updated_at timestamptz default now(), primary key(owner,book_id));
+create table recs(id uuid primary key default gen_random_uuid(), from_user uuid references profiles(id) on delete cascade, to_user uuid references profiles(id) on delete cascade, title text, author text, cover text, note text, seen bool default false, created_at timestamptz default now());
+create table vault(user_id uuid primary key references auth.users on delete cascade, data jsonb, updated_at timestamptz default now());
+alter table profiles enable row level security; alter table friendships enable row level security; alter table shared_books enable row level security; alter table recs enable row level security; alter table vault enable row level security;
+create function are_friends(a uuid,b uuid) returns bool language sql security definer stable set search_path=public as $$ select exists(select 1 from friendships where status='accepted' and ((requester=a and addressee=b) or (requester=b and addressee=a))) $$;
+create policy p_sel on profiles for select to anon, authenticated using (true);
+create policy p_ins on profiles for insert to authenticated with check (id=auth.uid());
+create policy p_upd on profiles for update to authenticated using (id=auth.uid());
+create policy f_sel on friendships for select to authenticated using (requester=auth.uid() or addressee=auth.uid());
+create policy f_ins on friendships for insert to authenticated with check (requester=auth.uid() and status='pending');
+create policy f_upd on friendships for update to authenticated using (addressee=auth.uid()) with check (addressee=auth.uid() and status='accepted');
+create policy f_del on friendships for delete to authenticated using (requester=auth.uid() or addressee=auth.uid());
+create policy s_sel on shared_books for select to authenticated using (owner=auth.uid() or are_friends(owner,auth.uid()));
+create policy s_ins on shared_books for insert to authenticated with check (owner=auth.uid());
+create policy s_upd on shared_books for update to authenticated using (owner=auth.uid());
+create policy s_del on shared_books for delete to authenticated using (owner=auth.uid());
+create policy r_sel on recs for select to authenticated using (to_user=auth.uid() or from_user=auth.uid());
+create policy r_ins on recs for insert to authenticated with check (from_user=auth.uid() and are_friends(from_user,to_user));
+create policy r_upd on recs for update to authenticated using (to_user=auth.uid());
+create policy r_del on recs for delete to authenticated using (to_user=auth.uid());
+create policy v_all on vault for all to authenticated using (user_id=auth.uid()) with check (user_id=auth.uid());

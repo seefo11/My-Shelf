@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f766e"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="My Shelf"><title>My Shelf</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f766e"><script src="config.js"></script><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="My Shelf"><title>My Shelf</title>
 <style>
 :root{--bg:#f3f4f7;--card:#fff;--ink:#18202e;--mut:#667085;--acc:#2f4b8f;--gold:#e0a030;--line:#e1e5ee;color-scheme:light}
 @media(prefers-color-scheme:dark){:root{--bg:#0d1117;--card:#161b24;--ink:#e8ecf3;--mut:#8b97a8;--acc:#7da2ff;--gold:#f2b84b;--line:#252d3a;color-scheme:dark}}
@@ -7,7 +7,7 @@ body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system
 header{display:flex;align-items:center;gap:8px;padding:18px 18px 6px;max-width:640px;margin:auto}h1{font:700 34px/1.1 ui-serif,Georgia,serif;margin:0;flex:1;letter-spacing:-.5px}#st{font-size:12px;color:var(--mut)}
 button,input,select,textarea{font-family:system-ui,-apple-system,sans-serif}
 .ic{border:0;background:none;font-size:26px;color:var(--gold);padding:4px 8px}
-#tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(5,1fr);background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:6}
+#tabs{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(7,1fr);background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:6}
 #tabs button{border:0;background:none;color:var(--mut);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 0;border-radius:0}#tabs em{font:700 19px ui-serif,Georgia,serif;font-style:normal;line-height:1.3}#tabs .on{color:var(--acc)}
 #bn,#inst{margin:8px auto;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--gold) 20%,var(--card));font-size:14px;max-width:604px;width:calc(100% - 36px)}
 #q,#so{display:block;width:calc(100% - 36px);max-width:604px;margin:8px auto;padding:11px 14px;border:0;border-radius:12px;background:var(--card);color:var(--ink);font-size:16px}
@@ -30,11 +30,20 @@ dialog h3{margin:0 0 6px;font:700 22px ui-serif,Georgia,serif}dialog input,dialo
 .sgb{display:block;width:100%;text-align:left;margin:3px 0}.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row{display:flex;gap:8px;margin-top:10px}.row button{flex:1;padding:12px}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+.hl{background:var(--card);border-radius:14px;padding:14px 14px 10px;margin:12px 0;border-left:5px solid var(--c)}
+.qt{font:italic 19px/1.45 ui-serif,Georgia,serif;margin:0 0 8px}.nt{margin:0 0 6px;color:var(--mut);font-size:14px}.goal .qt{color:var(--ink);font-size:17px;margin:6px 0}
+.ph{width:100%;max-height:220px;object-fit:contain;border-radius:10px;background:var(--bg);margin:6px 0}.ph.big{max-height:70vh}
+#sn{line-height:2.1}.sn{padding:3px 5px;border-radius:6px;background:var(--bg);margin:2px;box-decoration-break:clone}.sn.on{background:var(--gold);color:#1b1b1b}
+#cl{display:flex;gap:10px;align-items:center}#cl i{width:30px;height:30px;border-radius:50%;border:3px solid transparent}#cl i.on{border-color:var(--ink)}#hlg{width:auto;flex:none}
+#cr{position:relative;touch-action:none;line-height:0;margin:6px 0}.cri{width:100%;display:block;border-radius:10px;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
+#sl{position:absolute;border:2px solid var(--gold);background:#f2b84b33;border-radius:4px;pointer-events:none}
+.ic2{position:relative;display:block;height:26px}.ic2 sup{position:absolute;top:-3px;left:50%;margin-left:8px;background:var(--acc);color:var(--card);border-radius:8px;font-size:10px;line-height:1;padding:2px 5px;font-weight:700}
+.av{width:38px;height:38px;border-radius:50%;background:hsl(var(--h) 45% 40%);color:#fff;display:grid;place-items:center;font:700 17px ui-serif,Georgia,serif;flex:none}.fr{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:14px;padding:10px 12px}.fr b{flex:1}.in{width:100%;padding:11px;border:0;border-radius:10px;background:var(--card);color:var(--ink);font-size:16px;min-width:0}.feed small{display:block}
 </style></head><body>
 <header><h1 id="h1">My Shelf</h1><span id="st"></span><button class="ic" id="fvb" aria-label="Favorites only">♡</button></header>
 <nav id="tabs"></nav><div id="bn" hidden></div><div id="inst" hidden>Install it: tap Share, then Add to Home Screen. Safari can erase data of unused browser tabs after about 7 days; installed apps are exempt.</div>
 <input id="q" type="search" placeholder="Search title or author"><select id="so"><option value="r">Sort: recent</option><option value="t">Sort: title</option><option value="a">Sort: author</option><option value="s">Sort: rating</option></select><main id="main"></main>
-<div id="toast" hidden></div><button id="fab" aria-label="Add book">+</button><dialog id="dlg"></dialog><input id="file" type="file" accept=".json,application/json" hidden>
+<div id="toast" hidden></div><button id="fab" aria-label="Add book">+</button><dialog id="dlg"></dialog><input id="file" type="file" accept=".json,application/json" hidden><input id="csv" type="file" accept=".csv,text/csv" hidden>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const day=(d=new Date())=>new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -43,27 +52,32 @@ let dbp;const db=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('m
 const tx=async(m,f)=>{const d=await db();return new Promise((res,rej)=>{const t=d.transaction('kv',m),q=f(t.objectStore('kv'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})};
 const dbGet=k=>tx('readonly',o=>o.get(k)),dbSet=(k,v)=>tx('readwrite',o=>o.put(v,k)),dbKeys=()=>tx('readonly',o=>o.getAllKeys());
 let S,tab='reading',q='',tm,so='r',fv=false;const SORT={r:(a,b)=>b.u-a.u,t:(a,b)=>a.t.localeCompare(b.t),a:(a,b)=>a.a.localeCompare(b.a),s:(a,b)=>b.r-a.r};
-const TABS=[['reading','Reading'],['want','Want'],['done','Finished'],['stats','Stats'],['backup','Backup']];
+const SV=p=>`<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const IC={reading:SV('<path d="M4 5.5c2.5-1.5 5.5-1.5 8 0v14c-2.5-1.5-5.5-1.5-8 0z"/><path d="M20 5.5c-2.5-1.5-5.5-1.5-8 0v14c2.5-1.5 5.5-1.5 8 0z"/>'),want:SV('<path d="M7 4h10v16l-5-4-5 4z"/>'),done:SV('<circle cx="12" cy="12" r="8"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>'),hl:SV('<path d="M5 18l4-1 9-9-3-3-9 9z"/><path d="M4 21h16"/>'),friends:SV('<circle cx="9" cy="8" r="3"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.5 0 4 1.3 4 4"/>'),stats:SV('<path d="M6 20v-9M12 20V5M18 20v-6"/>'),backup:SV('<path d="M12 16V5M7.5 9.5L12 5l4.5 4.5"/><path d="M5 15v4h14v-4"/>')};
+const cnt=k=>{const n=k=='hl'?(S.hl||[]).length:['reading','want','done'].includes(k)?S.books.filter(b=>b.st==k).length:0;return n?`<sup>${n}</sup>`:''};
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const hn=b=>{const n=(S.hl||[]).filter(h=>h.b==b.id).length;return n?`<button data-a="bkq">${n} quote${n>1?'s':''}</button>`:''};
+const TABS=[['reading','Reading'],['want','Want'],['done','Done'],['hl','Quotes'],['friends','Friends'],['stats','Stats'],['backup','Me']];
 async function load(){let a,b;try{a=await dbGet('main')}catch{}try{b=JSON.parse(localStorage.getItem('ms'))}catch{}
  S=[a,b].filter(x=>x&&Array.isArray(x.books)).sort((x,y)=>y.u-x.u)[0]||{books:[],goal:12,lb:0,ch:0,u:0}}
 function save(now){S.u=Date.now();S.ch++;clearTimeout(tm);if(now)persist();else tm=setTimeout(persist,400);render()}
 async function persist(){clearTimeout(tm);try{localStorage.setItem('ms',JSON.stringify(S))}catch{}
- try{await dbSet('main',S);note('Saved ✓')}catch{note('⚠ Save failed: back up now')}}
+ try{await dbSet('main',S);note('Saved ✓');cloudSoon()}catch{note('⚠ Save failed: back up now')}}
 const pct=b=>b.p?Math.min(100,Math.round(b.cur/b.p*100)):0;
 const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
 const cvr=b=>`<div class="cv" style="--h:${hue(b.t)}"><span>${esc((b.t[0]||'?').toUpperCase())}</span>${b.cv?`<img loading="lazy" alt="" src="${esc(b.cv)}" onerror="this.remove()">`:''}</div>`;
 const card=b=>`<article class="card" data-id="${b.id}">${cvr(b)}<div class="bd"><div class="top"><div data-a="edit" class="ti"><b>${esc(b.t)}</b><small>${esc(b.a)}${b.r?' · '+'★'.repeat(b.r):''}</small></div><button class="ic" data-a="fav" aria-label="Favorite">${b.fav?'♥':'♡'}</button></div>`+
-(b.st=='reading'?`<div class="bar"><i style="width:${pct(b)}%"></i></div><div class="act"><span>${b.cur}${b.p?' / '+b.p+' pages · '+pct(b)+'%':' pages'}</span></div><div class="act"><button data-a="add" data-n="10">+10</button><button data-a="add" data-n="25">+25</button><button data-a="log">Log</button><button class="pri" data-a="done">Finish</button></div>`:
-b.st=='want'?`<div class="act"><button class="pri" data-a="start">Start reading</button></div>`:`<small>Finished ${esc(b.fin||'')}</small>`)+`</div></article>`;
-const goal=()=>{const td=day(),pt=S.books.flatMap(b=>b.log).filter(x=>x[0]==td).reduce((s,x)=>s+x[1],0),dg=S.dg||20;return `<div class="goal" data-a="dgoal"><b>${pt}</b> of ${dg} pages today<div class="bar"><i style="width:${Math.min(100,pt/dg*100)}%"></i></div></div>`};
+(b.st=='reading'?`<div class="bar"><i style="width:${pct(b)}%"></i></div><div class="act"><span>${b.cur}${b.p?' / '+b.p+' pages · '+pct(b)+'%':' pages'}</span></div><div class="act"><button data-a="add" data-n="10">+10</button><button data-a="add" data-n="25">+25</button>${S.tm&&S.tm.id==b.id?`<button class="pri" data-a="tstop"><span class="tk">${fmt(Math.floor((Date.now()-S.tm.t)/1000))}</span> Stop</button>`:`<button data-a="tstart">Timer</button>`}<button data-a="log">Log</button><button class="pri" data-a="done">Finish</button></div>`:
+b.st=='want'?`<div class="act"><button class="pri" data-a="start">Start reading</button></div>`:`<small>Finished ${esc(b.fin||'')}</small>`)+`<div class="act"><button data-a="bkhl">+ Highlight</button>${hn(b)}${me?'<button data-a="bkrec">Send to friend</button>':''}</div></div></article>`;
+const rq=()=>{const H=S.hl||[];if(!H.length)return '';const h=H[+day().replace(/-/g,'')%H.length];return `<div class="goal"><small>Today's highlight</small><p class="qt" dir="auto">${esc(h.t)}</p><small>${esc(bt(h.b))}</small></div>`};const goal=()=>{const td=day(),pt=S.books.flatMap(b=>b.log).filter(x=>x[0]==td).reduce((s,x)=>s+x[1],0),dg=S.dg||20;return `<div class="goal" data-a="dgoal"><b>${pt}</b> of ${dg} pages today<div class="bar"><i style="width:${Math.min(100,pt/dg*100)}%"></i></div></div>`};
 function render(){
- $('#tabs').innerHTML=TABS.map(([k,n])=>`<button data-t="${k}" class="${k==tab?'on':''}"><em>${k=='stats'?'◔':k=='backup'?'⇪':S.books.filter(b=>b.st==k).length}</em>${n}</button>`).join('');
+ $('#tabs').innerHTML=TABS.map(([k,n])=>`<button data-t="${k}" class="${k==tab?'on':''}"><span class="ic2">${IC[k]}${cnt(k)}</span>${n}</button>`).join('');
  const old=!S.lb||Date.now()-S.lb>6048e5||S.ch>=25;$('#bn').hidden=!(S.books.length&&old&&tab!='backup');
  $('#bn').innerHTML=`${S.lb?'Last backup '+ago(S.lb):'No backup yet'}. <button data-a="bk">Back up now</button>`;
- const isL=['reading','want','done','fav'].includes(tab);$('#q').hidden=$('#so').hidden=$('#fvb').hidden=!isL;$('#fvb').textContent=fv?'♥':'♡';$('#h1').textContent=TABS.find(t=>t[0]==tab)[1];const m=$('#main');
- if(tab=='stats')m.innerHTML=stats();else if(tab=='backup'){m.innerHTML=backup();snaps()}
+ const isL=['reading','want','done','fav'].includes(tab);$('#q').hidden=!(isL||tab=='hl');$('#so').hidden=$('#fvb').hidden=!isL;$('#fvb').textContent=fv?'♥':'♡';$('#h1').textContent=TABS.find(t=>t[0]==tab)[1];const m=$('#main');
+ if(tab=='friends')m.innerHTML=friendsView();else if(tab=='hl')m.innerHTML=hlList();else if(tab=='stats')m.innerHTML=stats();else if(tab=='backup'){m.innerHTML=backup();snaps()}
  else{let L=S.books.filter(b=>b.st==tab&&(!fv||b.fav));if(q)L=L.filter(b=>(b.t+' '+b.a).toLowerCase().includes(q));L.sort(SORT[so]);
-  m.innerHTML=(tab=='reading'?goal():'')+(L.map(card).join('')||`<p class="empty">${fv?'No favorites here yet.':'Nothing here yet. Tap + to add a book.'}</p>`)}}
+  m.innerHTML=(tab=='reading'?goal()+rq():'')+(L.map(card).join('')||`<p class="empty">${fv?'No favorites here yet.':'Nothing here yet. Tap + to add a book.'}</p>`)}}
 function pages(b,n){if(b.p)n=Math.min(n,b.p-b.cur);if(n<=0)return;b.cur+=n;const d=day(),l=b.log.find(x=>x[0]==d);l?l[1]+=n:b.log.push([d,n]);b.u=Date.now();if(b.p&&b.cur>=b.p)finish(b);else save()}
 function finish(b){if(b.p&&b.cur<b.p)return pages(b,b.p-b.cur);b.st='done';b.fin=day();b.u=Date.now();save();edit(b)}
 function edit(b){const n=!b;b=b||{id:uid(),t:'',a:'',p:0,cur:0,st:'want',r:0,n:'',log:[],fav:false,u:0};
@@ -77,34 +91,149 @@ function edit(b){const n=!b;b=b||{id:uid(),t:'',a:'',p:0,cur:0,st:'want',r:0,n:'
  if(!n)$('#rm').onclick=()=>{S.books=S.books.filter(x=>x!==b);(S.del=S.del||{})[b.id]=Date.now();$('#dlg').close();save();toast('Book deleted',()=>{S.books.push(b);delete S.del[b.id];b.u=Date.now();save()})};
  $('#dlg').showModal()}
 function stats(){const y=day().slice(0,4),B=S.books,yr=B.filter(b=>b.st=='done'&&(b.fin||'').startsWith(y)).length,L=B.flatMap(b=>b.log),tot=L.reduce((s,x)=>s+x[1],0),by={};L.forEach(([d,n])=>by[d]=(by[d]||0)+n);
- const rs=B.filter(b=>b.r),ar=rs.length?(rs.reduce((s,b)=>s+b.r,0)/rs.length).toFixed(1):'–';let s=0,d=new Date();if(!by[day(d)])d.setDate(d.getDate()-1);while(by[day(d)]){s++;d.setDate(d.getDate()-1)}
+ const ss=B.flatMap(b=>b.ses||[]),ts=ss.reduce((a,x)=>a+x[1],0),sp=ss.filter(x=>x[2]),pp=sp.reduce((a,x)=>a+x[2],0),ph=sp.reduce((a,x)=>a+x[1],0),rs=B.filter(b=>b.r),ar=rs.length?(rs.reduce((s,b)=>s+b.r,0)/rs.length).toFixed(1):'–';let s=0,d=new Date();if(!by[day(d)])d.setDate(d.getDate()-1);while(by[day(d)]){s++;d.setDate(d.getDate()-1)}
  const w=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return[day(d).slice(8),by[day(d)]||0]}),mx=Math.max(1,...w.map(x=>x[1]));
- return `<div class="stats"><div><b>${yr} / ${S.goal}</b>books finished in ${y}</div><div><b>${s}</b>day streak</div><div><b>${tot}</b>pages logged</div><div><b>${B.length}</b>books on shelf</div><div><b>${ar}</b>average rating</div><div><b>${Object.keys(by).length?Math.round(tot/Object.keys(by).length):0}</b>pages per reading day</div></div><div class="chart">${w.map(([l,n])=>`<div title="${n} pages"><i style="height:${n/mx*100}%"></i><small>${l}</small></div>`).join('')}</div><button data-a="goal">Set yearly goal</button>`}
-const backup=()=>`<div class="panel"><h3>Backup</h3><p>Last backup: ${S.lb?new Date(S.lb).toLocaleString():'never'}. ${S.ch} changes since.</p><button class="pri" data-a="bk">Back up now (save to Files or iCloud)</button><button data-a="imp">Restore from a backup file</button><h3>Automatic snapshots</h3><p>One snapshot per day is kept on this phone for 8 days.</p><div id="snaps" class="panel"></div><p id="ps"></p></div>`;
+ return `<div class="stats"><div><b>${yr} / ${S.goal}</b>books finished in ${y}</div><div><b>${s}</b>day streak</div><div><b>${tot}</b>pages logged</div><div><b>${B.length}</b>books on shelf</div><div><b>${ar}</b>average rating</div><div><b>${Object.keys(by).length?Math.round(tot/Object.keys(by).length):0}</b>pages per reading day</div><div><b>${Math.floor(ts/3600)}h ${Math.floor(ts%3600/60)}m</b>time read</div><div><b>${ph?Math.round(pp/(ph/3600)):'–'}</b>pages per hour</div><div><b>${(S.hl||[]).length}</b>highlights</div><div><b>${B.filter(b=>b.fav).length}</b>favorites</div></div><div class="chart">${w.map(([l,n])=>`<div title="${n} pages"><i style="height:${n/mx*100}%"></i><small>${l}</small></div>`).join('')}</div><button data-a="goal">Set yearly goal</button>`}
+const backup=()=>`<div class="panel">${acct()}<h3>Backup</h3><p>Last backup: ${S.lb?new Date(S.lb).toLocaleString():'never'}. ${S.ch} changes since.</p><button class="pri" data-a="bk">Back up now (save to Files or iCloud)</button><button data-a="imp">Restore from a backup file</button><button data-a="gr">Import from Goodreads (CSV)</button><button data-a="csvx">Export books as CSV</button><h3>Automatic snapshots</h3><p>One snapshot per day is kept on this phone for 8 days.</p><div id="snaps" class="panel"></div><p id="ps"></p></div>`;
 async function snaps(){const ks=(await dbKeys()).filter(k=>k.startsWith('snap-')).sort().reverse(),e=$('#snaps');if(e)e.innerHTML=ks.map(k=>`<button data-a="snap" data-k="${k}">Restore ${k.slice(5)}</button>`).join('')||'<p>None yet.</p>';
  navigator.storage?.persisted?.().then(p=>{const e=$('#ps');if(e)e.textContent=p?'Protected storage: on.':'Protected storage: not granted. Install to Home Screen and keep backing up.'})}
 function dl(f){const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),9e3)}
-async function exportNow(){const f=new File([JSON.stringify(S,null,1)],`myshelf-backup-${day()}.json`,{type:'application/json'});
+async function exportNow(){const im={};for(const h of S.hl||[])if(h.im){try{const d=await dbGet('img-'+h.id);if(d)im[h.id]=d}catch{}}const f=new File([JSON.stringify({...S,imgs:im},null,1)],`myshelf-backup-${day()}.json`,{type:'application/json'});
  try{if(navigator.canShare?.({files:[f]}))await navigator.share({files:[f],title:f.name});else dl(f)}catch(e){if(e.name=='AbortError')return;dl(f)}
  S.lb=Date.now();S.ch=0;save(true)}
 async function restoreSnap(k){if(!confirm('Replace your shelf with snapshot '+k.slice(5)+'? Your current shelf is saved first.'))return;const s=await dbGet(k);if(!s)return;await dbSet('snap-'+day()+'-pre',S);S=s;save(true)}
 $('#file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const j=JSON.parse(await f.text());if(!Array.isArray(j.books))throw 0;
- const bs=j.books.filter(b=>b&&b.t).map(b=>({id:String(b.id||uid()),t:String(b.t),a:String(b.a||''),p:+b.p||0,cur:+b.cur||0,st:['want','reading','done'].includes(b.st)?b.st:'want',r:Math.min(5,+b.r||0),n:String(b.n||''),fav:!!b.fav,fin:b.fin?String(b.fin):'',cv:b.cv?String(b.cv):'',log:Array.isArray(b.log)?b.log.filter(x=>Array.isArray(x)&&x.length==2):[],u:+b.u||0}));
+ const bs=j.books.filter(b=>b&&b.t).map(b=>({id:String(b.id||uid()),t:String(b.t),a:String(b.a||''),p:+b.p||0,cur:+b.cur||0,st:['want','reading','done'].includes(b.st)?b.st:'want',r:Math.min(5,+b.r||0),n:String(b.n||''),fav:!!b.fav,fin:b.fin?String(b.fin):'',cv:b.cv?String(b.cv):'',ses:Array.isArray(b.ses)?b.ses.filter(x=>Array.isArray(x)&&x.length>=2):[],log:Array.isArray(b.log)?b.log.filter(x=>Array.isArray(x)&&x.length==2):[],u:+b.u||0}));
  await dbSet('snap-'+day()+'-pre',S);
- if(confirm(`Found ${bs.length} books.\nOK = merge with your current shelf\nCancel = replace your shelf`)){const m=new Map(S.books.map(b=>[b.id,b]));bs.forEach(b=>{if((S.del||{})[b.id]>b.u)return;const o=m.get(b.id);if(!o||b.u>o.u)m.set(b.id,b)});S.books=[...m.values()]}else S.books=bs;
+ const hs=(Array.isArray(j.hl)?j.hl:[]).filter(x=>x&&x.t).map(x=>({id:String(x.id||uid()),b:String(x.b||''),t:String(x.t),pg:String(x.pg||''),n:String(x.n||''),c:/^#[0-9a-f]{6}$/i.test(x.c)?x.c:HC[0],im:1,u:+x.u||0}));
+ for(const x of hs){const d=j.imgs&&j.imgs[x.id];if(typeof d=='string'&&/^data:image\//.test(d))await dbSet('img-'+x.id,d);else x.im=0}
+ if(confirm(`Found ${bs.length} books.\nOK = merge with your current shelf\nCancel = replace your shelf`)){const m=new Map(S.books.map(b=>[b.id,b]));bs.forEach(b=>{if((S.del||{})[b.id]>b.u)return;const o=m.get(b.id);if(!o||b.u>o.u)m.set(b.id,b)});S.books=[...m.values()];const hm=new Map((S.hl||[]).map(x=>[x.id,x]));hs.forEach(x=>{if((S.del||{})[x.id]>x.u)return;const o=hm.get(x.id);if(!o||x.u>o.u)hm.set(x.id,x)});S.hl=[...hm.values()]}else{S.books=bs;S.hl=hs}
  if(j.goal>0)S.goal=j.goal;save(true)}catch{alert('That file is not a valid My Shelf backup.')}};
+const HC=['#f2c14e','#7bd389','#ff8fab','#8ecae6'],bt=id=>(S.books.find(b=>b.id==id)||{}).t||'';
+function hlList(){let L=(S.hl||[]).slice().sort((a,b)=>b.u-a.u);if(q)L=L.filter(h=>(h.t+' '+h.n+' '+bt(h.b)).toLowerCase().includes(q));
+ return (L.length?'<div class="act"><button data-a="hlexp">Export all as Markdown</button></div>':'')+L.map(h=>`<article class="hl" data-id="${h.id}" style="--c:${h.c||HC[0]}"><p class="qt" dir="auto" data-a="hledit">${esc(h.t)}</p>${h.n?`<p class="nt">${esc(h.n)}</p>`:''}<div class="act"><span>${esc(bt(h.b))}${h.pg?' · p. '+esc(h.pg):''}</span>${h.im?'<button data-a="hlimg">Photo</button>':''}<button data-a="hlshare">Share</button><button data-a="hlcard">Image</button></div></article>`).join('')||'<p class="empty">Photograph a page to save your first highlight.<br>Tap + to start.</p>'}
+const shrink=f=>new Promise((res,rej)=>{const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{const k=Math.min(1,1400/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.75))};i.onerror=rej;i.src=u});
+const loadOCR=()=>window.Tesseract?Promise.resolve():new Promise((r,j)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';s.onload=r;s.onerror=j;document.head.append(s)});
+async function hlImg(h){const d=await dbGet('img-'+h.id);if(!d)return toast('Photo not found on this phone');$('#dlg').innerHTML=`<img class="ph big" src="${d}" alt=""><div class="row"><button id="no">Close</button></div>`;$('#no').onclick=()=>$('#dlg').close();$('#dlg').showModal()}
+async function hlShare(h){const t='“'+h.t+'”'+(bt(h.b)?'\n— '+bt(h.b)+(h.pg?', p. '+h.pg:''):'');try{if(navigator.share)await navigator.share({text:t});else{await navigator.clipboard.writeText(t);toast('Copied')}}catch{}}
+const rot=u=>new Promise(res=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=i.height;c.height=i.width;const x=c.getContext('2d');x.translate(c.width,0);x.rotate(Math.PI/2);x.drawImage(i,0,0);res(c.toDataURL('image/jpeg',.8))};i.src=u});
+function ask(title,val,cb){$('#dlg').innerHTML=`<h3>${esc(title)}</h3><input id="av" type="number" inputmode="numeric" min="1" value="${esc(val)}"><div class="row"><button id="no">Cancel</button><button class="pri" id="ok">OK</button></div>`;$('#no').onclick=()=>$('#dlg').close();$('#ok').onclick=()=>{const v=$('#av').value;$('#dlg').close();cb(v)};$('#dlg').showModal();$('#av').select()}
+function logSheet(b){$('#dlg').innerHTML=`<h3>Log reading</h3><div class="g"><input id="av" type="number" inputmode="numeric" min="1" placeholder="Number"><select id="am"><option value="r">pages I read</option><option value="p">page I'm on</option></select></div><div class="row"><button id="no">Cancel</button><button class="pri" id="ok">Save</button></div>`;$('#no').onclick=()=>$('#dlg').close();$('#ok').onclick=()=>{const v=+$('#av').value,n=$('#am').value=='p'?v-b.cur:v;$('#dlg').close();if(n>0)pages(b,n)};$('#dlg').showModal();$('#av').focus()}
+function hlExport(){const by={};(S.hl||[]).slice().sort((a,b)=>a.u-b.u).forEach(h=>{const k=bt(h.b)||'No book';(by[k]=by[k]||[]).push(h)});
+ const md='# My highlights\n\n'+Object.entries(by).map(([t,L])=>'## '+t+'\n\n'+L.map(h=>'> '+h.t.replace(/\n+/g,' ')+(h.pg?'\n>\n> — p. '+h.pg:'')+(h.n?'\n\n*Note:* '+h.n:'')).join('\n\n')).join('\n\n');
+ const f=new File([md],`myshelf-highlights-${day()}.md`,{type:'text/markdown'});try{if(navigator.canShare?.({files:[f]}))navigator.share({files:[f]}).catch(()=>{});else dl(f)}catch{dl(f)}}
+async function hlCard(h){const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),col=h.c||HC[0];
+ x.fillStyle='#101826';x.fillRect(0,0,W,H);x.fillStyle=col;x.fillRect(80,120,120,10);
+ const ar=/[\u0600-\u06FF]/.test(h.t);x.direction=ar?'rtl':'ltr';x.textAlign=ar?'right':'left';const X=ar?W-80:80;
+ let fs=h.t.length>260?38:h.t.length>140?48:60,L;
+ const wrap=()=>{x.font=`italic ${fs}px Georgia,serif`;const out=[];let l='';for(const w of h.t.split(/\s+/)){const t=l?l+' '+w:w;if(x.measureText(t).width>W-160&&l){out.push(l);l=w}else l=t}out.push(l);return out};
+ L=wrap();while(L.length*fs*1.4>880&&fs>26){fs-=4;L=wrap()}
+ x.fillStyle='#f2f4f8';L.forEach((l,i)=>x.fillText(l,X,230+fs+i*fs*1.4));
+ x.font='600 34px system-ui,sans-serif';x.fillStyle=col;x.fillText((bt(h.b)||'')+(h.pg?'  ·  p. '+h.pg:''),X,H-170);
+ x.font='28px system-ui,sans-serif';x.fillStyle='#8b97a8';x.fillText('My Shelf',X,H-110);
+ const blob=await new Promise(r=>c.toBlob(r,'image/png')),f=new File([blob],'highlight.png',{type:'image/png'});
+ try{if(navigator.canShare?.({files:[f]}))await navigator.share({files:[f]});else dl(f)}catch(e){if(e.name!='AbortError')dl(f)}}
+function hlEdit(h,bid){const n=!h;h=h||{id:uid(),b:bid||'',t:'',pg:'',n:'',c:HC[0],u:0,im:0};let img=null,sn=[],sel=new Set(),col=h.c||HC[0];
+ $('#dlg').innerHTML=`<h3>${n?'New highlight':'Highlight'}</h3><select id="hb"><option value="">No book</option>${S.books.map(b=>`<option value="${b.id}" ${b.id==h.b?'selected':''}>${esc(b.t)}</option>`).join('')}</select>
+<div class="row"><button class="pri" id="cam">Photo of the page</button><select id="hlg"><option value="eng">English</option><option value="ara">Arabic</option><option value="eng+ara">Both</option></select></div><input id="pf" type="file" accept="image/*" hidden><div id="ocr"></div><div id="sn" dir="auto"></div>
+<textarea id="ht" dir="auto" rows="4" placeholder="Highlight text">${esc(h.t)}</textarea><div class="g"><input id="hp" inputmode="numeric" placeholder="Page" value="${esc(h.pg)}"><div id="cl">${HC.map(c=>`<i data-c="${c}" style="background:${c}" class="${c==col?'on':''}"></i>`).join('')}</div></div>
+<textarea id="hn" rows="2" placeholder="Your note (optional)">${esc(h.n)}</textarea><div class="row"><button id="no">Cancel</button>${n?'':'<button id="rm">Delete</button>'}<button class="pri" id="ok">Save</button></div>`;
+ $('#cam').onclick=()=>$('#pf').click();
+ $('#pf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const o=$('#ocr');o.textContent='Preparing photo…';
+  try{img=await shrink(f)}catch{o.textContent='Could not open that photo.';return}
+  o.innerHTML=`<div id="cr"><img id="ci" class="cri" src="${img}" alt=""><div id="sl" hidden></div></div><div class="row"><button id="rot">Rotate</button><button class="pri" id="scan">Read text</button></div><small id="op">Drag over the lines you want, or tap Read text for the whole page.</small>`;
+  let a=null,r=null;const cr=$('#cr'),sl=$('#sl'),box=()=>cr.getBoundingClientRect();
+  cr.onpointerdown=e=>{const b=box();a={x:e.clientX-b.left,y:e.clientY-b.top};r=null;sl.hidden=true;cr.setPointerCapture(e.pointerId)};
+  cr.onpointermove=e=>{if(!a)return;const b=box(),x=Math.max(0,Math.min(b.width,e.clientX-b.left)),y=Math.max(0,Math.min(b.height,e.clientY-b.top));r={x:Math.min(a.x,x),y:Math.min(a.y,y),w:Math.abs(x-a.x),h:Math.abs(y-a.y)};Object.assign(sl.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});sl.hidden=false};
+  cr.onpointerup=()=>{a=null;if(r&&(r.w<24||r.h<24)){r=null;sl.hidden=true}};
+  $('#rot').onclick=async()=>{img=await rot(img);$('#ci').src=img;r=null;sl.hidden=true};
+  $('#scan').onclick=async()=>{const p=$('#op'),im=$('#ci');let src=img;
+   if(r){const k=im.naturalWidth/im.clientWidth,c=document.createElement('canvas');c.width=r.w*k;c.height=r.h*k;c.getContext('2d').drawImage(im,r.x*k,r.y*k,r.w*k,r.h*k,0,0,c.width,c.height);src=c.toDataURL('image/jpeg',.9)}
+   try{p.textContent='Loading reader… the first scan needs internet';await loadOCR();
+    const w=await Tesseract.createWorker($('#hlg').value,1,{logger:m=>{if(m.progress!=null)p.textContent=m.status+' '+Math.round(m.progress*100)+'%'}});
+    const res=await w.recognize(src);await w.terminate();sel.clear();$('#ht').value='';
+    sn=(res.data.text.replace(/\s+/g,' ').match(/[^.!?؟]+[.!?؟]*["”']?/g)||[]).map(x=>x.trim()).filter(x=>x.length>2);
+    p.textContent=sn.length?'Tap the sentences you want to highlight':'No text found. Try a smaller area, or type it below.';
+    $('#sn').innerHTML=sn.map((x,i)=>`<span class="sn" data-i="${i}">${esc(x)}</span> `).join('')}
+   catch{p.textContent='Could not read the text (needs internet the first time). Type it below.'}}};
+ $('#sn').onclick=e=>{const s=e.target.closest('.sn');if(!s)return;const i=+s.dataset.i;sel.has(i)?sel.delete(i):sel.add(i);s.classList.toggle('on');$('#ht').value=[...sel].sort((a,b)=>a-b).map(i=>sn[i]).join(' ')};
+ $('#cl').onclick=e=>{const c=e.target.dataset.c;if(!c)return;col=c;[...$('#cl').children].forEach(x=>x.classList.toggle('on',x.dataset.c==c))};
+ $('#ok').onclick=async()=>{const t=$('#ht').value.trim();if(!t&&!img)return $('#ht').focus();
+  Object.assign(h,{b:$('#hb').value,t:t||'(photo only)',pg:$('#hp').value.trim(),n:$('#hn').value.trim(),c:col,u:Date.now()});
+  if(img){try{await dbSet('img-'+h.id,img);h.im=1}catch{}}if(n)(S.hl=S.hl||[]).push(h);$('#dlg').close();save();if(n)toast('Highlight saved')};
+ $('#no').onclick=()=>$('#dlg').close();
+ if(!n)$('#rm').onclick=()=>{S.hl=S.hl.filter(x=>x!==h);(S.del=S.del||{})[h.id]=Date.now();$('#dlg').close();save();toast('Highlight deleted',()=>{S.hl.push(h);delete S.del[h.id];h.u=Date.now();save()})};
+ $('#dlg').showModal()}
+function parseCsv(t){const R=[];let r=[],f='',q=0;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=0}else f+=c}else if(c=='"')q=1;else if(c==','){r.push(f);f=''}else if(c=='\n'||c=='\r'){if(c=='\r'&&t[i+1]=='\n')i++;r.push(f);f='';R.push(r);r=[]}else f+=c}if(f||r.length){r.push(f);R.push(r)}return R}
+$('#csv').onchange=async e=>{const fl=e.target.files[0];e.target.value='';if(!fl)return;try{const R=parseCsv((await fl.text()).replace(/^\uFEFF/,'')),H=R.shift().map(x=>x.trim()),ix=n=>H.indexOf(n);if(ix('Title')<0)throw 0;
+ await dbSet('snap-'+day()+'-pre',S);const have=new Set(S.books.map(b=>(b.t+'|'+b.a).toLowerCase()));let add=0;
+ for(const r of R){const t=(r[ix('Title')]||'').trim();if(!t)continue;const a=(r[ix('Author')]||'').trim();if(have.has((t+'|'+a).toLowerCase()))continue;
+  const sh=r[ix('Exclusive Shelf')],st=sh=='read'?'done':sh=='currently-reading'?'reading':'want',p=parseInt(r[ix('Number of Pages')],10)||0;
+  S.books.push({id:uid(),t:t.replace(/\s*\([^)]*#\d+\)$/,''),a,p,cur:st=='done'?p:(parseInt(r[ix('Current Page')],10)||0),st,r:Math.min(5,parseInt(r[ix('My Rating')],10)||0),n:[r[ix('My Review')],r[ix('Private Notes')],r[ix('Notes')]].filter(Boolean).join('\n\n').replace(/<br\s*\/?>/gi,'\n'),fav:/yes/i.test(r[ix('Favorite')]||''),fin:st=='done'?(r[ix('Date Read')]||'').replace(/\//g,'-'):'',log:[],ses:[],cv:'',u:Date.now()});add++}
+ save(true);toast('Imported '+add+' new books')}catch{alert('That does not look like a Goodreads export. In Goodreads, use My Books, then Import and export, then Export Library.')}};
+function csvExport(){const e=v=>'"'+String(v??'').replace(/"/g,'""')+'"',st={want:'to-read',reading:'currently-reading',done:'read'};
+ const rows=[['Title','Author','My Rating','Number of Pages','Exclusive Shelf','Date Read','Favorite','Current Page','Notes']].concat(S.books.map(b=>[b.t,b.a,b.r,b.p,st[b.st],b.fin||'',b.fav?'yes':'',b.cur,b.n||'']));
+ const f=new File(['\uFEFF'+rows.map(r=>r.map(e).join(',')).join('\r\n')],`myshelf-books-${day()}.csv`,{type:'text/csv'});try{if(navigator.canShare?.({files:[f]}))navigator.share({files:[f]}).catch(()=>{});else dl(f)}catch{dl(f)}}
+setInterval(()=>{if(!S||!S.tm)return;const e=document.querySelector('.tk');if(e)e.textContent=fmt(Math.floor((Date.now()-S.tm.t)/1000))},1000);
+let sb,me=null,FR=[],FD=[],RC=[],PF={},pt;const CL={},CFG=window.CFG||{},cloudOn=()=>!!(CFG.url&&CFG.key);
+const av=id=>`<span class="av" style="--h:${hue(PF[id]||'?')}">${esc((PF[id]||'?')[0].toUpperCase())}</span>`;
+const loadSB=()=>window.supabase?Promise.resolve():new Promise((r,j)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';s.onload=r;s.onerror=j;document.head.append(s)});
+async function initCloud(){if(!cloudOn())return;try{await loadSB();sb=supabase.createClient(CFG.url,CFG.key);const{data}=await sb.auth.getSession();if(data.session)await onLogin(data.session.user)}catch{}}
+async function onLogin(u){let p=(await sb.from('profiles').select('*').eq('id',u.id).maybeSingle()).data;
+ if(!p){const r=await sb.from('profiles').insert({id:u.id,username:u.user_metadata&&u.user_metadata.username}).select().single();if(r.error){toast('Could not create your profile. Log out and try another username.');return}p=r.data}
+ me=p;PF[me.id]=me.username;const v=(await sb.from('vault').select('data').eq('user_id',u.id).maybeSingle()).data,cd=v&&v.data;
+ if(cd&&Array.isArray(cd.books)&&(cd.u||0)>(S.u||0)&&(!S.books.length||confirm('Your cloud backup is newer than this phone. Restore it?'))){S=cd;S.tm=null;await persist()}else cloudSoon();
+ await loadSocial();render()}
+async function push(){if(!me)return;const now=new Date().toISOString(),bs=S.books.filter(b=>b.fav||b.st=='reading').map(b=>({owner:me.id,book_id:b.id,title:b.t,author:b.a,pages:b.p,status:b.st,rating:b.r,fav:!!b.fav,cover:b.cv||null,updated_at:now})),ids=bs.map(b=>b.book_id);
+ if(bs.length)await sb.from('shared_books').upsert(bs,{onConflict:'owner,book_id'});
+ let d=sb.from('shared_books').delete().eq('owner',me.id);if(ids.length)d=d.not('book_id','in','('+ids.map(i=>'"'+i+'"').join(',')+')');await d;
+ const r=await sb.from('vault').upsert({user_id:me.id,data:S,updated_at:now});if(r.error)throw r.error}
+const cloudSoon=()=>{if(!me)return;clearTimeout(pt);pt=setTimeout(async()=>{try{await push();note('Synced ☁')}catch{note('Saved (sync pending)')}},4000)};
+async function loadSocial(){if(!me)return;FR=(await sb.from('friendships').select('id,requester,addressee,status').or(`requester.eq.${me.id},addressee.eq.${me.id}`)).data||[];
+ const ids=[...new Set(FR.flatMap(x=>[x.requester,x.addressee]))].filter(i=>i!=me.id);PF={[me.id]:me.username};
+ if(ids.length)((await sb.from('profiles').select('id,username').in('id',ids)).data||[]).forEach(x=>PF[x.id]=x.username);
+ const fids=FR.filter(x=>x.status=='accepted').map(x=>x.requester==me.id?x.addressee:x.requester);
+ FD=fids.length?((await sb.from('shared_books').select('*').in('owner',fids).order('updated_at',{ascending:false}).limit(60)).data||[]):[];
+ RC=(await sb.from('recs').select('*').eq('to_user',me.id).eq('seen',false).order('created_at',{ascending:false})).data||[];render()}
+function addWant(t,a,cv,p){if(S.books.some(b=>(b.t+'|'+b.a).toLowerCase()==(t+'|'+(a||'')).toLowerCase()))return toast('Already on your shelf');S.books.push({id:uid(),t,a:a||'',p:p||0,cur:0,st:'want',r:0,n:'',fav:false,log:[],ses:[],cv:cv||'',u:Date.now()});save();toast('Added to Want')}
+const feedCard=(b,i)=>`<article class="card"><div class="cv" style="--h:${hue(b.title)}"><span>${esc((b.title[0]||'?').toUpperCase())}</span>${b.cover?`<img loading="lazy" alt="" src="${esc(b.cover)}" onerror="this.remove()">`:''}</div><div class="bd"><div class="ti"><b>${esc(b.title)}</b><small>${esc(b.author)}</small></div><div class="act"><span>@${esc(PF[b.owner]||'reader')} · ${b.fav?'♥ loves it':'reading now'}${b.rating?' · '+'★'.repeat(b.rating):''}</span></div><div class="act"><button data-a="fcopy" data-i="${i}">Want to read</button></div></div></article>`;
+function friendsView(){if(!cloudOn())return '<p class="empty">Cloud features need a free Supabase project. Follow the setup steps, then reload.</p>';if(!me)return '<p class="empty">Log in from the Me tab to add friends and share books.</p>';
+ const inc=FR.filter(x=>x.status=='pending'&&x.addressee==me.id),out=FR.filter(x=>x.status=='pending'&&x.requester==me.id),fr=FR.filter(x=>x.status=='accepted'),un=id=>'@'+esc(PF[id]||'reader');
+ return `<div class="panel"><div class="act"><input id="fu" class="in" style="flex:1" placeholder="Friend's username"><button class="pri" data-a="fadd">Add</button></div><p id="fm"></p>`+
+ (inc.length?`<h3>Requests</h3>${inc.map(x=>`<div class="fr">${av(x.requester)}<b>${un(x.requester)}</b><button class="pri" data-a="facc" data-i="${x.id}">Accept</button><button data-a="frm" data-i="${x.id}">Decline</button></div>`).join('')}`:'')+
+ (RC.length?`<h3>Recommended to you</h3>${RC.map(r=>`<div class="card feed"><div class="bd"><div class="ti"><b>${esc(r.title)}</b><small>${esc(r.author)}</small></div><small>From ${un(r.from_user)}${r.note?': '+esc(r.note):''}</small><div class="act"><button class="pri" data-a="rcadd" data-i="${r.id}">Want to read</button><button data-a="rcx" data-i="${r.id}">Dismiss</button></div></div></div>`).join('')}`:'')+
+ `<h3>Friends (${fr.length})</h3>${fr.map(x=>{const id=x.requester==me.id?x.addressee:x.requester;return `<div class="fr">${av(id)}<b>${un(id)}</b></div>`}).join('')||'<p>Add a friend by username to see their favorite books.</p>'}${out.length?`<p>Waiting for: ${out.map(x=>un(x.addressee)).join(', ')}</p>`:''}<h3>Loved and reading</h3>${FD.map(feedCard).join('')||'<p>Nothing from friends yet.</p>'}</div>`}
+const acct=()=>!cloudOn()?'<p>Cloud features are off. Add your Supabase keys to config.js to turn on accounts and friends.</p>':me?`<h3>Account</h3><div class="fr">${av(me.id)}<b>@${esc(me.username)}</b></div><p>Your shelf is backed up to your account. Friends only see your favorites and the book you're reading.</p><button class="pri" data-a="sync">Sync now</button><button data-a="lo">Log out</button>`:`<h3>Account</h3><input id="ae" class="in" type="email" placeholder="Email" autocomplete="email"><input id="ap" class="in" type="password" placeholder="Password" autocomplete="current-password"><input id="au" class="in" placeholder="Username (sign up only)" autocapitalize="none"><div class="act"><button class="pri" data-a="li">Log in</button><button data-a="su">Create account</button></div><p id="am"></p>`;
+CL.li=async()=>{const m=$('#am');m.textContent='Logging in…';const{data,error}=await sb.auth.signInWithPassword({email:$('#ae').value.trim(),password:$('#ap').value});if(error)return m.textContent=error.message;await onLogin(data.user)};
+CL.su=async()=>{const m=$('#am'),u=$('#au').value.trim().toLowerCase();if(!/^[a-z0-9_]{3,20}$/.test(u))return m.textContent='Username: 3 to 20 letters, numbers or _.';
+ if((await sb.from('profiles').select('id').eq('username',u).maybeSingle()).data)return m.textContent='That username is taken.';
+ const{data,error}=await sb.auth.signUp({email:$('#ae').value.trim(),password:$('#ap').value,options:{data:{username:u}}});if(error)return m.textContent=error.message;
+ if(data.session)await onLogin(data.user);else m.textContent='Check your email to confirm, then log in.'};
+CL.lo=async()=>{await sb.auth.signOut();me=null;FR=[];FD=[];RC=[];render()};
+CL.sync=async()=>{try{await push();toast('Synced ☁')}catch{toast('Sync failed')}};
+CL.fadd=async()=>{const u=$('#fu').value.trim().toLowerCase().replace(/^@/,''),m=$('#fm');if(!u)return;const p=(await sb.from('profiles').select('id').eq('username',u).maybeSingle()).data;
+ if(!p)return m.textContent='No reader with that username.';if(p.id==me.id)return m.textContent='That is you.';
+ const{error}=await sb.from('friendships').insert({requester:me.id,addressee:p.id,status:'pending'});m.textContent=error?'Already requested or already friends.':'Request sent ✓';if(!error)loadSocial()};
+CL.facc=async a=>{await sb.from('friendships').update({status:'accepted'}).eq('id',a.dataset.i);loadSocial()};
+CL.frm=async a=>{await sb.from('friendships').delete().eq('id',a.dataset.i);loadSocial()};
+CL.fcopy=a=>{const b=FD[+a.dataset.i];if(b)addWant(b.title,b.author,b.cover,b.pages)};
+CL.rcadd=async a=>{const r=RC.find(x=>x.id==a.dataset.i);if(r){addWant(r.title,r.author,r.cover);await sb.from('recs').update({seen:true}).eq('id',r.id);loadSocial()}};
+CL.rcx=async a=>{await sb.from('recs').update({seen:true}).eq('id',a.dataset.i);loadSocial()};
+CL.bkrec=(a,b)=>{const fr=FR.filter(x=>x.status=='accepted').map(x=>x.requester==me.id?x.addressee:x.requester);if(!fr.length)return toast('Add a friend first (Friends tab)');
+ $('#dlg').innerHTML=`<h3>Send “${esc(b.t)}”</h3><select id="rt">${fr.map(i=>`<option value="${i}">@${esc(PF[i]||'reader')}</option>`).join('')}</select><textarea id="rn" rows="2" placeholder="Why they will love it (optional)"></textarea><div class="row"><button id="no">Cancel</button><button class="pri" id="ok">Send</button></div>`;
+ $('#no').onclick=()=>$('#dlg').close();$('#ok').onclick=async()=>{const{error}=await sb.from('recs').insert({from_user:me.id,to_user:$('#rt').value,title:b.t,author:b.a,cover:b.cv||null,note:$('#rn').value.trim()});$('#dlg').close();toast(error?'Could not send':'Sent ✓')};$('#dlg').showModal()};
 let tt;function toast(m,fn){const t=$('#toast');t.innerHTML=esc(m)+(fn?' <button>Undo</button>':'');t.hidden=false;if(fn)t.querySelector('button').onclick=()=>{fn();t.hidden=true};clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,6000)}
-document.onclick=e=>{const t=e.target.closest('[data-t]');if(t){tab=t.dataset.t;render();return}
- const a=e.target.closest('[data-a]');if(!a)return;const c=a.closest('.card'),b=c&&S.books.find(x=>x.id==c.dataset.id),k=a.dataset.a;
- if(b&&k=='fav'){b.fav=!b.fav;b.u=Date.now();save()}else if(b&&k=='add')pages(b,+a.dataset.n);
- else if(b&&k=='log'){const v=prompt('Pages read now? Or type p120 for the page you are on.','');if(v==null)return;const m=/^p\s*(\d+)$/i.exec(v.trim()),n=m?+m[1]-b.cur:parseInt(v,10);if(n>0)pages(b,n)}
+document.onclick=e=>{const t=e.target.closest('[data-t]');if(t){tab=t.dataset.t;q='';$('#q').value='';render();if(tab=='friends'&&me)loadSocial();return}
+ const a=e.target.closest('[data-a]');if(!a)return;const c=a.closest('.card'),b=c&&S.books.find(x=>x.id==c.dataset.id),k=a.dataset.a,hc=a.closest('.hl'),hh=hc&&(S.hl||[]).find(x=>x.id==hc.dataset.id);
+ if(CL[k])CL[k](a,b);else if(k=='hlexp')hlExport();else if(b&&k=='tstart'){if(S.tm&&S.tm.id!=b.id)return toast('Stop the running timer first');S.tm={id:b.id,t:Date.now()};save(true)}else if(b&&k=='tstop'){const sc=Math.max(1,Math.floor((Date.now()-S.tm.t)/1000)),se=[day(),sc,0];(b.ses=b.ses||[]).push(se);S.tm=null;save(true);ask('Pages read this session','',v=>{const n=parseInt(v,10);if(n>0){se[2]=n;pages(b,n)}})}else if(b&&k=='bkhl')hlEdit(null,b.id);else if(b&&k=='bkq'){tab='hl';q=b.t.toLowerCase();$('#q').value=b.t;render()}else if(hh&&k=='hledit')hlEdit(hh);else if(hh&&k=='hlimg')hlImg(hh);else if(hh&&k=='hlshare')hlShare(hh);else if(hh&&k=='hlcard')hlCard(hh);else if(b&&k=='fav'){b.fav=!b.fav;b.u=Date.now();save()}else if(b&&k=='add')pages(b,+a.dataset.n);
+ else if(b&&k=='log')logSheet(b)
  else if(b&&k=='start'){b.st='reading';b.u=Date.now();save()}else if(b&&k=='done')finish(b);else if(b&&k=='edit')edit(b);
- else if(k=='bk')exportNow();else if(k=='imp')$('#file').click();else if(k=='snap')restoreSnap(a.dataset.k);
- else if(k=='dgoal'){const g=parseInt(prompt('Pages per day?',S.dg||20),10);if(g>0){S.dg=g;save()}}else if(k=='goal'){const g=parseInt(prompt('Books per year?',S.goal),10);if(g>0){S.goal=g;save()}}};
-$('#so').onchange=e=>{so=e.target.value;render()};$('#fvb').onclick=()=>{fv=!fv;render()};$('#fab').onclick=()=>edit();$('#q').oninput=e=>{q=e.target.value.toLowerCase();render()};
+ else if(k=='gr')$('#csv').click();else if(k=='csvx')csvExport();else if(k=='bk')exportNow();else if(k=='imp')$('#file').click();else if(k=='snap')restoreSnap(a.dataset.k);
+ else if(k=='dgoal')ask('Pages per day',S.dg||20,v=>{const g=parseInt(v,10);if(g>0){S.dg=g;save()}});else if(k=='goal')ask('Books per year',S.goal,v=>{const g=parseInt(v,10);if(g>0){S.goal=g;save()}})};
+$('#so').onchange=e=>{so=e.target.value;render()};$('#fvb').onclick=()=>{fv=!fv;render()};$('#fab').onclick=()=>tab=='hl'?hlEdit():edit();$('#q').oninput=e=>{q=e.target.value.toLowerCase();render()};
 addEventListener('pagehide',()=>persist());document.addEventListener('visibilitychange',()=>document.hidden&&persist());
 (async()=>{await load();try{const k='snap-'+day();if(S.books.length&&!(await dbGet(k)))await dbSet(k,S);
  for(const x of (await dbKeys()).filter(k=>k.startsWith('snap-')).sort().slice(0,-8))await tx('readwrite',o=>o.delete(x))}catch{}
  navigator.storage?.persist?.();render();if(!navigator.standalone&&!matchMedia('(display-mode:standalone)').matches)$('#inst').hidden=false;
- navigator.serviceWorker?.register('sw.js')})();
+ navigator.serviceWorker?.register('sw.js');initCloud()})();
 </script></body></html>
