@@ -1,7 +1,5 @@
-cd $HOME\Downloads
-Expand-Archive -Force .\My-Shelf.zip -DestinationPath .\My-Shelf-new
-Copy-Item .\My-Shelf-new\* .\My-Shelf\ -Recurse -Force
-cd .\My-Shelf
+cd $HOME\Downloads\My-Shelf
+Set-Content config.js 'window.CFG={url:"https://jgponmkxrbvsacvjrjod.supabase.co",key:"sb_publishable_8gyVMG6S78BgCrTT4fs5vQ_0EWpmy02"};'
 git add .
-git commit -m "My Shelf v3 redesign"
+git commit -m "Add Supabase config"
 git push
