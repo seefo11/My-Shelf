@@ -530,7 +530,7 @@ let DIAG=[];
 async function runDiag(){const out=[],t=(n,ok,d)=>out.push([n,ok,d||'']);
  try{await dbSet('diag',Date.now());t('Storage on this phone',(await dbGet('diag'))>0)}catch(e){t('Storage on this phone',false,e.message)}
  try{localStorage.setItem('ms_t','1');localStorage.removeItem('ms_t');t('Backup copy storage',true)}catch(e){t('Backup copy storage',false,e.message)}
- t('Protected storage',navigator.storage&&navigator.storage.persisted?await navigator.storage.persisted():null);t('Installed on Home Screen',!!(navigator.standalone||matchMedia('(display-mode:standalone)').matches));
+ t('Protected storage',navigator.storage&&navigator.storage.persisted?await navigator.storage.persisted():null);{const ins=!!(navigator.standalone||matchMedia('(display-mode:standalone)').matches),mob=/iPhone|iPad|Android/i.test(navigator.userAgent);t('Installed on Home Screen',ins?true:(mob?false:null),mob||ins?'':'only matters on a phone')}
  t('Works offline',!!(navigator.serviceWorker&&navigator.serviceWorker.controller));t('Share sheet',!!navigator.share);t('Cloud keys in config.js',cloudOn());
  if(cloudOn()){t('Account server loaded',!!sb);t('Logged in',!!me,me?'@'+me.username:'');
   if(me){for(const x of ['profiles','shared_books','shared_hl','shared_stats','recs','vault','vault_imgs','friendships']){const r=await sb.from(x).select('*',{count:'exact',head:true});t('Table '+x,!r.error,r.error?'run the missing SQL file':'')}
@@ -538,7 +538,7 @@ async function runDiag(){const out=[],t=(n,ok,d)=>out.push([n,ok,d||'']);
    const p=await sb.rpc('popular_books',{lim:1});t('Discover function',!p.error,p.error?'run update2.sql':'');const f=await sb.rpc('username_free',{u:'zz'});t('Username check function',!f.error,f.error?'run update.sql':'');t('Sync conflict',!CF,CF?'resolve it in Me':'')}
   const leak=[];for(const x of ['vault','vault_imgs','shared_books','shared_hl','shared_stats','recs','friendships','profiles']){try{const r=await fetch(CFG.url+'/rest/v1/'+x+'?select=*&limit=1',{headers:{apikey:CFG.key,Authorization:'Bearer '+CFG.key}}),j=await r.json();if(Array.isArray(j)&&j.length)leak.push(x)}catch{}}
   t('Strangers cannot read your data',!leak.length,leak.length?'LEAK: '+leak.join(', ')+' (run update.sql and update4.sql)':'')}
- for(const[n,u]of[['Open Library','https://openlibrary.org/search.json?limit=1&q=a'],['Google Books','https://www.googleapis.com/books/v1/volumes?maxResults=1&q=a']])t(n+' reachable',!!(await OLS(u)));
+ for(const[n,u]of[['Open Library','https://openlibrary.org/search.json?limit=1&q=a'],['Google Books','https://www.googleapis.com/books/v1/volumes?maxResults=1&q=a']]){try{const r=await fetch(u);t(n+' reachable',r.ok,'HTTP '+r.status)}catch(e){t(n+' reachable',false,(e.message||'failed')+' (blocked by an extension, firewall or network?)')}}
  return out}
 const diagView=()=>`<div class="panel">${back()}<h3>Check my app</h3><p>Version ${VER}. Tap Copy report and send it to me, or screenshot this page.</p><div id="dg" class="panel"><p>Testing…</p></div><h3>Recent errors</h3><div id="de" class="panel"></div><div class="act"><button class="pri" data-a="dcopy">Copy report</button><button data-a="dclr">Clear errors</button></div></div>`;
 async function diagFill(){DIAG=await runDiag();const d=$('#dg');if(!d)return;d.innerHTML=DIAG.map(([n,ok,x])=>`<div class="fr"><span>${ok===true?'✅':ok===false?'❌':'➖'}</span><b>${esc(n)}</b><small>${esc(x)}</small></div>`).join('');$('#de').innerHTML=ERR.length?ERR.slice().reverse().map(e=>`<p>${esc(e)}</p>`).join(''):'<p>No errors recorded.</p>'}
