@@ -212,7 +212,7 @@ const prune=async(t,c,ids)=>{let d=sb.from(t).delete().eq('owner',me.id);if(ids.
 function statsObj(){const y=day().slice(0,4),B=S.books,L=B.flatMap(b=>b.log),by={};L.forEach(([d,n])=>by[d]=(by[d]||0)+n);let s=0,d=new Date();if(!by[day(d)])d.setDate(d.getDate()-1);while(by[day(d)]){s++;d.setDate(d.getDate()-1)}
  const ss=B.flatMap(b=>b.ses||[]),rs=B.filter(b=>b.r);return{year:B.filter(b=>b.st=='done'&&(b.fin||'').startsWith(y)).length,goal:S.goal,streak:s,pages:L.reduce((a,x)=>a+x[1],0),secs:ss.reduce((a,x)=>a+x[1],0),avg:rs.length?+(rs.reduce((a,b)=>a+b.r,0)/rs.length).toFixed(1):0,books:B.length,hl:(S.hl||[]).length,week:[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return by[day(d)]||0})}}
 const SHD={reading:true,want:true,done:true,hl:true,stats:true};
-async function push(){if(!me)return;if(await conflict()){CF=true;toast('Another phone changed your shelf. Open Me to fix it.');render();return}const sh=me.share||SHD,now=new Date().toISOString();
+async function push(){if(!me)return;if(await conflict())await autoMerge();const sh=me.share||SHD,now=new Date().toISOString();
  const bs=S.books.filter(b=>sh[b.st]!==false).map(b=>({owner:me.id,book_id:b.id,title:b.t,author:b.a,pages:b.p,cur:b.cur,fin:b.fin||null,status:b.st,rating:b.r,fav:!!b.fav,cover:b.cv||null,updated_at:now}));
  if(bs.length)await sb.from('shared_books').upsert(bs,{onConflict:'owner,book_id'});await prune('shared_books','book_id',bs.map(b=>b.book_id));
  const hs=sh.hl===false?[]:(S.hl||[]).map(h=>({owner:me.id,hl_id:h.id,txt:h.t,book:bt(h.b),pg:h.pg||null,color:h.c||null,note:h.n||null,updated_at:now}));
@@ -287,7 +287,7 @@ function custom(){const o=ORD(),th=S.th||'auto',dn=S.den||'cozy',sg=(key,L,cur)=
  return `<div class="panel">${back()}<h3>Bottom bar</h3><p>The first five sections sit in the bar next to Me. Others go under More. Use the arrows to rearrange.</p>${o.map((k,i)=>`${i==5?'<p class="cut">↑ in the bar · under More ↓</p>':''}<div class="fr"><span class="ic3">${IC[k]}</span><b>${lbl(k)}</b><button data-a="mup" data-k="${k}" ${i?'':'disabled'}>▲</button><button data-a="mdn" data-k="${k}" ${i<o.length-1?'':'disabled'}>▼</button></div>`).join('')}
  <h3>Open the app on</h3><select id="cs" class="in">${[...o,'backup'].map(k=>`<option value="${k}" ${(S.start||'reading')==k?'selected':''}>${lbl(k)}</option>`).join('')}</select>
  <h3>Theme</h3>${sg('cth',[['auto','Auto'],['light','Light'],['dark','Dark']],th)}${appear()}<h3>Card size</h3>${sg('cden',[['cozy','Comfortable'],['compact','Compact']],dn)}<h3>Language</h3>${sg('clang',[['en','English'],['ar','العربية']],S.lang||(isAr()?'ar':'en'))}</div>`}
-CL.mgo=a=>{MP=a.dataset.p;render()};CL.mback=()=>{MP='home';render()};CL.mtab=a=>{tab=a.dataset.k;q='';render();if(tab=='friends'&&me)loadSocial();if(tab=='discover')discLoad()};
+CL.mgo=a=>{if(a.dataset.p=='cfl')return conflictSheet();MP=a.dataset.p;render()};CL.mback=()=>{MP='home';render()};CL.mtab=a=>{tab=a.dataset.k;q='';render();if(tab=='friends'&&me)loadSocial();if(tab=='discover')discLoad()};
 const mv=(k,d)=>{const o=ORD(),i=o.indexOf(k),j=i+d;if(j<0||j>=o.length)return;[o[i],o[j]]=[o[j],o[i]];S.order=o;save()};
 CL.mup=a=>mv(a.dataset.k,-1);CL.mdn=a=>mv(a.dataset.k,1);CL.cth=a=>{S.th=a.dataset.v;save()};CL.cden=a=>{S.den=a.dataset.v;save()};
 document.onchange=e=>{if(e.target.id=='cs'){S.start=e.target.value;save()}else if(e.target.id=='chue'){S.acc=+e.target.value;save()}else if(e.target.id=='pph'){const f=e.target.files[0];e.target.value='';if(f)sq(f,256).then(d=>{me.photo=d;$('#pp').innerHTML=av(me.id)})}};
@@ -513,6 +513,7 @@ addEventListener('error',e=>logErr((e.message||'error')+' @'+(e.lineno||'')));ad
 const T=s=>{if(!isAr())return s;const t=String(s).trim();return AR[t]??rx(t)??s},_cf=window.confirm.bind(window),_al=window.alert.bind(window);window.confirm=m=>_cf(T(m));window.alert=m=>_al(T(m));
 const DEV=(()=>{let d=null;try{d=localStorage.getItem('ms_dev');if(!d){d=uid();localStorage.setItem('ms_dev',d)}}catch{d=uid()}return d})();
 async function conflict(){const v=(await sb.from('vault').select('updated_at,dev:data->>_dev').eq('user_id',me.id).maybeSingle()).data;return !!(v&&v.dev&&v.dev!=DEV&&Date.parse(v.updated_at)>(+localStorage.getItem('ms_seen')||0))}
+async function autoMerge(){const v=(await sb.from('vault').select('data,updated_at').eq('user_id',me.id).maybeSingle()).data;if(!v||!v.data)return;await dbSet('snap-'+day()+'-pre',S);S=mergeS(S,v.data);localStorage.setItem('ms_seen',Date.parse(v.updated_at));CF=false;await persist();render()}
 function mergeS(a,b){const del={...(b.del||{}),...(a.del||{})},m=(x,y)=>{const M=new Map();[...(x||[]),...(y||[])].forEach(i=>{if(del[i.id]>i.u)return;const o=M.get(i.id);if(!o||i.u>o.u)M.set(i.id,i)});return[...M.values()]};
  const n=(a.u||0)>=(b.u||0)?{...b,...a}:{...a,...b};n.books=m(a.books,b.books);n.hl=m(a.hl,b.hl);n.del=del;n.u=Date.now();n.tm=null;return n}
 async function conflictSheet(){const v=(await sb.from('vault').select('data,updated_at').eq('user_id',me.id).maybeSingle()).data;if(!v)return;
